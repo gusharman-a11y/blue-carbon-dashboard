@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blue Carbon Dashboard · Pollination</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a1628;--card:#111f38;--card2:#162540;--border:#1e3358;
+  --text:#e2eeff;--muted:#7a9abf;
+  --teal:#00d4aa;--blue:#0ea5e9;--purple:#a78bfa;--green:#34d399;
+  --amber:#f59e0b;--red:#f87171;--orange:#f97316;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5}
+
+/* header */
+header{background:var(--card);border-bottom:1px solid var(--border);padding:13px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-dot{width:8px;height:8px;border-radius:50%;background:var(--teal)}
+.brand h1{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.header-right{font-size:11px;color:var(--muted);text-align:right;line-height:1.6}
+
+/* stat bar */
+.stat-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border)}
+.stat-card{background:var(--card);padding:13px 20px}
+.stat-label{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:2px}
+.stat-value{font-size:23px;font-weight:700;letter-spacing:-.5px}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.v-teal{color:var(--teal)}.v-blue{color:var(--blue)}.v-purple{color:var(--purple)}.v-green{color:var(--green)}.v-amber{color:var(--amber)}
+
+/* controls */
+.controls{background:var(--card2);border-bottom:1px solid var(--border);padding:8px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.controls label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+select,input[type=text]{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:5px 9px;border-radius:6px;font-size:12px;cursor:pointer;outline:none}
+select:focus,input:focus{border-color:var(--teal)}
+.ctrl-sep{width:1px;height:18px;background:var(--border);margin:0 3px}
+.badge{font-size:11px;padding:3px 8px;border-radius:12px;font-weight:600}
+.badge-teal{background:rgba(0,212,170,.15);color:var(--teal)}
+
+/* map + bubble view */
+.viz-wrap{position:relative}
+.viz-tabs{display:flex;gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.viz-tab{padding:8px 20px;font-size:12px;font-weight:600;cursor:pointer;background:var(--card2);color:var(--muted);border:none;transition:all .15s}
+.viz-tab:hover{color:var(--text)}
+.viz-tab.active{background:var(--card);color:var(--teal);border-bottom:2px solid var(--teal)}
+.viz-panel{display:none}.viz-panel.active{display:block}
+#main-map{display:block;width:100%;height:440px;cursor:crosshair}
+.map-tooltip{position:absolute;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.6);color:var(--text);padding:12px 14px;min-width:200px;font-size:12px;pointer-events:none;z-index:500;display:none}
+#bubble-wrap{height:440px;width:100%;background:var(--bg);position:relative}
+#bubble-canvas{width:100%;height:100%}
+
+/* map overlays */
+.map-controls{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:500;display:flex;gap:6px;background:rgba(10,22,40,.88);border:1px solid var(--border);border-radius:8px;padding:6px 10px;backdrop-filter:blur(6px)}
+.map-controls label{font-size:11px;color:var(--muted);margin-right:2px}
+.tog-group{display:flex;gap:3px}
+.tog-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .15s}
+.tog-btn:hover{border-color:var(--teal);color:var(--text)}
+.tog-btn.active{background:var(--teal);border-color:var(--teal);color:#000;font-weight:600}
+.tog-btn.active-risk{background:var(--orange);border-color:var(--orange);color:#000}
+.tog-btn.active-area{background:var(--blue);border-color:var(--blue);color:#000}
+.map-legend{position:absolute;bottom:12px;right:10px;z-index:500;background:rgba(10,22,40,.9);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:11px;backdrop-filter:blur(4px);min-width:130px}
+.map-legend-title{color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;font-size:10px}
+.legend-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* bubble note */
+.bubble-note{position:absolute;top:10px;right:12px;z-index:10;background:rgba(10,22,40,.85);border:1px solid var(--border);border-radius:7px;padding:8px 12px;font-size:11px;color:var(--muted);max-width:220px;line-height:1.4}
+.bubble-note strong{color:var(--text)}
+
+/* analytics grid */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:1px;background:var(--border)}
+.analytics-grid>div{background:var(--card);padding:18px}
+.chart-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.chart-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+.chart-wrap{position:relative;height:180px}
+.donut-legend{margin-top:10px;display:flex;flex-direction:column;gap:4px}
+.donut-legend-row{display:flex;align-items:center;justify-content:space-between;font-size:11px}
+.donut-legend-label{display:flex;align-items:center;gap:6px}
+.donut-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.donut-val{color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* size band table */
+.size-table-section{background:var(--card);border-top:1px solid var(--border);padding:20px 28px}
+.size-table-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.size-table-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+table.size-bands{width:100%;border-collapse:collapse;font-size:13px}
+table.size-bands th{padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);border-bottom:1px solid var(--border)}
+table.size-bands th:not(:first-child){text-align:right}
+table.size-bands td{padding:10px 12px;border-bottom:1px solid rgba(30,51,88,.4);font-variant-numeric:tabular-nums}
+table.size-bands td:not(:first-child){text-align:right}
+table.size-bands tr:last-child td{border-bottom:none;font-weight:600;color:var(--text)}
+.band-chip{display:inline-flex;align-items:center;gap:8px}
+.band-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.thresh-note{font-size:11px;color:var(--muted);margin-top:10px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid var(--border);line-height:1.5}
+.thresh-note strong{color:var(--text)}
+
+/* selected project strip */
+#selected-panel{display:none;background:var(--card2);border-bottom:1px solid var(--teal);padding:10px 28px;gap:20px;align-items:center;flex-wrap:wrap}
+.sel-stat{display:flex;flex-direction:column;gap:1px;min-width:90px}
+.sel-label{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.sel-val{font-size:13px;font-weight:600;color:var(--text)}
+.sel-dismiss{background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;flex-shrink:0;transition:border-color .15s}
+.sel-dismiss:hover{border-color:var(--teal);color:var(--text)}
+table.projects tr.row-selected td{background:rgba(0,212,170,.07)!important;border-bottom-color:rgba(0,212,170,.2)}
+
+
+/* project table */
+.table-section{padding:0 0 40px}
+.table-controls{display:flex;align-items:center;gap:10px;padding:18px 28px 10px;border-top:1px solid var(--border)}
+.table-controls h2{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);flex:1}
+.search-wrap{position:relative}
+.search-wrap input{padding-left:28px;width:200px}
+.search-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.table-wrap{overflow-x:auto;padding:0 28px}
+table.projects{width:100%;border-collapse:collapse;font-size:12px}
+table.projects th{padding:7px 9px;text-align:left;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+table.projects th:hover{color:var(--text)}
+table.projects th.sort-asc::after{content:' ↑'}
+table.projects th.sort-desc::after{content:' ↓'}
+table.projects td{padding:8px 9px;border-bottom:1px solid rgba(30,51,88,.4);vertical-align:middle}
+table.projects tr:hover td{background:rgba(255,255,255,.02)}
+.eco-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:500}
+.eco-Mangrove{background:rgba(0,212,170,.15);color:var(--teal)}
+.eco-Seagrass{background:rgba(14,165,233,.15);color:var(--blue)}
+.eco-Salt{background:rgba(167,139,250,.15);color:var(--purple)}
+.eco-Tidal{background:rgba(52,211,153,.15);color:var(--green)}
+.size-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.size-Small{background:rgba(96,165,250,.15);color:#60a5fa}
+.size-Medium{background:rgba(245,158,11,.15);color:var(--amber)}
+.size-Large{background:rgba(248,113,113,.15);color:var(--red)}
+.status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}
+.status-Registered{background:var(--teal)}
+.status-Verification{background:var(--green)}
+.status-Registration{background:var(--blue)}
+.status-Validated{background:var(--blue)}
+.status-Under{background:var(--amber)}
+.num{font-variant-numeric:tabular-nums;color:var(--muted)}
+/* NPRT buffer pill */
+.nprt-pill{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600;font-variant-numeric:tabular-nums}
+.nprt-flag{background:rgba(248,113,113,.18);color:#f87171}
+.nprt-warn{background:rgba(245,158,11,.18);color:#f59e0b}
+.nprt-ok{background:rgba(52,211,153,.18);color:#34d399}
+.nprt-na{color:var(--muted);font-size:11px}
+
+footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+.footer-row{display:flex;justify-content:space-between}
+.src-link{color:var(--blue);text-decoration:none}.src-link:hover{text-decoration:underline}
+
+.popup-name{font-weight:600;font-size:13px;margin-bottom:6px}
+.popup-row{display:flex;justify-content:space-between;gap:16px;font-size:12px;color:var(--muted);margin-top:3px}
+.popup-row span:last-child{color:var(--text);font-weight:500}
+.popup-eco{display:inline-block;margin-top:6px;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:500}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-dot"></div>
+    <div>
+      <h1>Blue Carbon <span style="font-weight:400;color:var(--muted)">/  Global Registry</span></h1>
+      <div style="font-size:11px;color:var(--muted);margin-top:1px">Verra VCS · 66 projects · 48 VM0033 (real) + 18 illustrative · v2026-05</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div>Data: Berkeley VROD v2026-02 · Verra project registry · CDP disclosures</div>
+    <div style="color:var(--amber)">⚠ Verra/S&P API deprecated Aug 2025 — bulk data via Berkeley VROD</div>
+  </div>
+</header>
+
+<div class="stat-bar">
+  <div class="stat-card"><div class="stat-label">Projects</div><div class="stat-value v-teal" id="s-projects">—</div><div class="stat-sub" id="s-countries">— countries</div></div>
+  <div class="stat-card"><div class="stat-label" id="sl-area">Total Area</div><div class="stat-value v-blue" id="s-area">—</div><div class="stat-sub" id="s-area-sub">hectares</div></div>
+  <div class="stat-card"><div class="stat-label" id="sl-credits">Est. Annual (tCO2e)</div><div class="stat-value v-purple" id="s-credits">—</div><div class="stat-sub" id="s-credits-sub">sum of Verra-registered annual reductions</div></div>
+  <div class="stat-card"><div class="stat-label" id="sl-largest">Largest Project</div><div class="stat-value v-amber" id="s-largest">—</div><div class="stat-sub" id="s-largest-name">by est. annual reductions</div></div>
+  <div class="stat-card"><div class="stat-label">Buffer &lt;15% ⚠</div><div class="stat-value v-red" id="s-flagged" style="color:var(--red)">—</div><div class="stat-sub" id="s-flagged-sub">of VM0033 projects checked</div></div>
+</div>
+
+<div class="controls">
+  <label>Ecosystem</label>
+  <select id="f-eco">
+    <option value="">All ecosystems</option>
+    <option>Mangrove</option><option>Seagrass</option><option>Salt Marsh</option><option>Tidal Wetland</option>
+  </select>
+  <label>Region</label>
+  <select id="f-region">
+    <option value="">All regions</option>
+    <option>Africa</option><option>Asia</option><option>Americas</option>
+    <option>Pacific</option><option>Oceania</option><option>Middle East</option><option>Europe</option>
+  </select>
+  <label>Status</label>
+  <select id="f-status">
+    <option value="">All statuses</option>
+    <option>Registered</option>
+    <option>Verification Requested</option>
+    <option>Registration Requested</option>
+    <option>Validated</option>
+    <option>Under Validation</option>
+    <option>Under Development</option>
+  </select>
+  <label>Size</label>
+  <select id="f-size">
+    <option value="">All sizes</option>
+    <option>Small</option><option>Medium</option><option>Large</option>
+  </select>
+  <label>Method</label>
+  <select id="f-method">
+    <option value="">All methods</option>
+    <option>VM0033</option><option>VM0071</option><option>VM0024</option>
+  </select>
+  <label>Activity</label>
+  <select id="f-activity">
+    <option value="">All activities</option>
+    <option value="ARR">Restoration (ARR)</option>
+    <option value="REDD">Conservation (REDD)</option>
+    <option value="WRC-only">WRC only</option>
+  </select>
+  <label>Buffer Risk</label>
+  <select id="f-nprt">
+    <option value="">All</option>
+    <option value="flagged">Flagged (&lt;15%)</option>
+    <option value="confirmed">Confirmed only</option>
+  </select>
+  <span class="badge badge-teal" id="filter-count">All projects</span>
+</div>
+
+<!-- ── Viz: Interactive Map + Bubble Chart ── -->
+<div class="viz-wrap">
+  <div class="viz-tabs">
+    <button class="viz-tab active" data-panel="map-panel">Interactive Map</button>
+    <button class="viz-tab" data-panel="bubble-panel">Bubble Chart · sized by est. annual reductions</button>
+  </div>
+
+  <div id="map-panel" class="viz-panel active" style="position:relative">
+    <canvas id="main-map"></canvas>
+    <div id="map-tooltip" class="map-tooltip"></div>
+    <div class="map-controls">
+      <label>Colour</label>
+      <div class="tog-group" id="colour-tog">
+        <button class="tog-btn active" data-v="eco">Ecosystem</button>
+        <button class="tog-btn" data-v="risk">Risk</button>
+      </div>
+      <div class="ctrl-sep" style="margin:0 6px"></div>
+      <label>Size</label>
+      <div class="tog-group" id="size-tog">
+        <button class="tog-btn active" data-v="dot">Dot</button>
+        <button class="tog-btn" data-v="area">Project Area</button>
+      </div>
+      <div class="ctrl-sep" style="margin:0 6px"></div>
+      <button class="tog-btn" id="map-reset-btn">Reset</button>
+    </div>
+    <div style="position:absolute;bottom:10px;left:10px;z-index:10;font-size:10px;color:var(--muted);opacity:.6;pointer-events:none">Scroll to zoom · Drag to pan · Double-click to reset</div>
+    <div class="map-legend" id="map-legend"></div>
+  </div>
+
+  <div id="bubble-panel" class="viz-panel" style="position:relative">
+    <div id="bubble-wrap"><canvas id="bubble-canvas"></canvas></div>
+    <div class="bubble-note">
+      <strong>Bubble = est. annual reductions (tCO2e).</strong><br>
+      Position = geographic coordinates (lat/lng).<br>
+      Colour = ecosystem type.<br>
+      Outlines = simplified continent shapes.
+    </div>
+  </div>
+</div>
+
+<!-- ── Selected project strip ── -->
+<div id="selected-panel"></div>
+
+<!-- ── Analytics grid ── -->
+<div class="analytics-grid">
+  <div>
+    <div class="chart-title">Ecosystem Types</div>
+    <div class="chart-sub" id="eco-sub">by est. annual reductions</div>
+    <div class="chart-wrap"><canvas id="chart-eco"></canvas></div>
+    <div class="donut-legend" id="eco-legend"></div>
+  </div>
+  <div>
+    <div class="chart-title">Project Status</div>
+    <div class="chart-sub" id="status-sub">by count</div>
+    <div class="chart-wrap"><canvas id="chart-status"></canvas></div>
+    <div class="donut-legend" id="status-legend"></div>
+  </div>
+  <div>
+    <div class="chart-title">Est. Annual Reductions by Region</div>
+    <div class="chart-sub" id="region-sub">tCO2e/yr (Verra-registered) — Asia dominates at ~60% of global total</div>
+    <div class="chart-wrap"><canvas id="chart-region"></canvas></div>
+  </div>
+</div>
+
+<!-- ── Size Band Analysis ── -->
+<div class="size-table-section">
+  <div class="size-table-title">Project Size Bands</div>
+  <div class="size-table-sub" id="size-sub">Thresholds computed from dataset P33 / P66 area distribution</div>
+  <table class="size-bands" id="size-table"></table>
+  <div class="thresh-note" id="thresh-note"></div>
+</div>
+
+
+<!-- ── Project Table ── -->
+<div class="table-section">
+  <div class="table-controls">
+    <h2>All Projects</h2>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)">
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:2px;background:#00d4aa"></div>ARR biomass</div>
+      <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:2px;background:#0ea5e9"></div>WRC / SOC</div>
+      <span style="color:#3a5a7a">· SOC split confirmed from PD (6 of 22 ARR+WRC projects)</span>
+    </div>
+    <div class="search-wrap"><span class="search-icon">⌕</span><input type="text" id="search" placeholder="Search name, country…"></div>
+  </div>
+  <div class="table-wrap">
+    <table class="projects">
+      <thead><tr>
+        <th data-col="name">Project</th>
+        <th data-col="country">Country</th>
+        <th data-col="region">Region</th>
+        <th data-col="ecosystem">Ecosystem</th>
+        <th data-col="area_ha" style="text-align:right">Area (ha)</th>
+        <th data-col="size">Size</th>
+        <th data-col="activities">Activities</th>
+        <th data-col="wrc_pct" style="text-align:center" title="ARR (biomass) vs WRC (soil organic carbon) credit split — confirmed from PD quantification tables where available">SOC Split</th>
+        <th data-col="credits_issued" style="text-align:right">Est. Annual (tCO2e)</th>
+        <th data-col="nprt_pct" style="text-align:right">Buffer %</th>
+        <th data-col="status">Status</th>
+        <th data-col="method">Method</th>
+        <th data-col="year" style="text-align:right">Reg.</th>
+      </tr></thead>
+      <tbody id="proj-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-row">
+    <div>Sources: <a class="src-link" href="https://registry.verra.org" target="_blank">Verra VCS Registry</a> · <a class="src-link" href="https://gspp.berkeley.edu/berkeley-carbon-trading-project/offsets-database" target="_blank">Berkeley VROD v2026-02</a> · <a class="src-link" href="https://www.nature.com/articles/s44183-025-00141-6" target="_blank">Nature npj Ocean Sustainability (2025)</a></div>
+    <div>Pollination Group · Internal · May 2026</div>
+  </div>
+  <div class="footer-row" style="margin-top:2px">
+    <div style="color:#3a5a7a">Verra covers ~87% of blue carbon VCUs by volume. Size thresholds: data-driven P33/P66 of project area distribution in the current filtered view.</div>
+  </div>
+  <div class="footer-row" style="margin-top:2px">
+    <div style="color:#3a5a7a">⚠ Country risk: indicative composite score (political stability · governance · regulatory quality) proxied from World Bank WGI and Freedom House data. <strong style="color:#4a6a8a">Not externally validated</strong> — screening indicator only. · VM0071 (seagrass) and VM0024 (tidal/salt marsh) project records are <strong style="color:#4a6a8a">illustrative stand-ins</strong> pending Verra registry pull; treat as directional only.</div>
+  </div>
+</footer>
+
+<script>
+// ════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════
+// VM0033 projects: real Verra Registry data (fetched 2026-05-18, source: allprojects.csv + resourceSummary API)
+// nprt_pct: Non-permanence risk tool (NPRT) buffer pool % extracted from Project Descriptions / NPR reports (2026-05-26)
+// wrc_pct: % of total credits from WRC (soil organic carbon / SOC), confirmed from PD quantification tables (2026-05-26).
+//   Remaining % = ARR (biomass). Null = not explicitly broken down in PD (most projects only publish aggregate totals).
+// area_ha + lat/lng: Verra resourceSummary API (project 5418 converted from acres)
+// credits_issued: Verra-registered est. annual emission reductions (tCO2e/yr) from allprojects.csv
+// VM0071 / VM0024 projects: illustrative
+const PROJECTS = [
+  // ── VM0033 · Africa ──────────────────────────────────────────────────────────
+  {id:'VCS5922',name:'Lamantin',country:'Guinea',region:'Africa',lat:10.857388,lng:-14.662888,ecosystem:'Mangrove',area_ha:73751,credits_issued:80000,activities:'REDD; WRC',status:'Under Development',method:'VM0033',year:2026,nprt_pct:null},
+  {id:'VCS5923',name:'Balbuzard',country:'Guinea',region:'Africa',lat:10.112885,lng:-14.135472,ecosystem:'Mangrove',area_ha:97305,credits_issued:118000,activities:'REDD; WRC',status:'Under Development',method:'VM0033',year:2026,nprt_pct:null},
+  {id:'VCS5427',name:'Guinea Mangrove Restoration',country:'Guinea',region:'Africa',lat:9.39091,lng:-13.335617,ecosystem:'Mangrove',area_ha:27332,credits_issued:322876,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2025,nprt_pct:22,wrc_pct:87},
+  {id:'VCS5456',name:'BissauBlue',country:'Guinea-Bissau',region:'Africa',lat:11.206992,lng:-15.29991,ecosystem:'Mangrove',area_ha:11000,credits_issued:102283,activities:'ARR; WRC',status:'Under Development',method:'VM0033',year:2025,nprt_pct:null},
+  {id:'VCS5457',name:'TanzaBlue',country:'Tanzania',region:'Africa',lat:-9.064408,lng:39.467244,ecosystem:'Mangrove',area_ha:5000,credits_issued:31667,activities:'ARR; WRC',status:'Under Development',method:'VM0033',year:2025,nprt_pct:null},
+  {id:'VCS5720',name:'Sierra Leone Mangrove Conservation',country:'Sierra Leone',region:'Africa',lat:8.9279,lng:-13.1418,ecosystem:'Mangrove',area_ha:18000,credits_issued:176391,activities:'ARR; WRC',status:'Under Development',method:'VM0033',year:2025,nprt_pct:null},
+  {id:'VCS4539',name:'Sierra Leone Community Mangroves',country:'Sierra Leone',region:'Africa',lat:7.558806,lng:-12.637778,ecosystem:'Mangrove',area_ha:74034,credits_issued:258000,activities:'ARR; REDD; WRC',status:'Under Validation',method:'VM0033',year:2024,nprt_pct:23,wrc_pct:32},
+  {id:'VCS4644',name:'Scarcies Mangroves',country:'Sierra Leone',region:'Africa',lat:8.890306,lng:-13.086603,ecosystem:'Mangrove',area_ha:10000,credits_issued:78000,activities:'ARR; WRC',status:'Inactive',method:'VM0033',year:2022,nprt_pct:null},
+  {id:'VCS4563',name:'ABC Mangrove Senegal',country:'Senegal',region:'Africa',lat:12.569169,lng:-16.278198,ecosystem:'Mangrove',area_ha:7000,credits_issued:71548,activities:'WRC',status:'Registration Requested',method:'VM0033',year:2022,nprt_pct:15},
+  {id:'VCS3885',name:'Lep Lep Senegal',country:'Senegal',region:'Africa',lat:12.91058,lng:-16.689819,ecosystem:'Mangrove',area_ha:750,credits_issued:21739,activities:'ARR; WRC',status:'Under Development',method:'VM0033',year:2023,nprt_pct:null},
+  {id:'VCS4845',name:'CAMERR Cameroon',country:'Cameroon',region:'Africa',lat:4.018887,lng:9.689721,ecosystem:'Mangrove',area_ha:1055,credits_issued:15662,activities:'ARR',status:'Registration Requested',method:'VM0033',year:2022,nprt_pct:27},
+  {id:'VCS5224',name:'Nigeria Delta Mangroves',country:'Nigeria',region:'Africa',lat:6.25,lng:5,ecosystem:'Mangrove',area_ha:270000,credits_issued:1935095,activities:'ALM; ARR; REDD; WRC',status:'Under Development',method:'VM0033',year:2025,nprt_pct:null},
+  {id:'VCS5192',name:'Djibouti Mangroves',country:'Djibouti',region:'Africa',lat:11.516666,lng:43.207777,ecosystem:'Mangrove',area_ha:2900,credits_issued:45694,activities:'ARR; REDD; WRC',status:'Under Development',method:'VM0033',year:2025,nprt_pct:null},
+  {id:'VCS4856',name:'Ala Honko Madagascar',country:'Madagascar',region:'Africa',lat:-15.919617,lng:46.303538,ecosystem:'Mangrove',area_ha:687,credits_issued:18204,activities:'ARR; WRC',status:'Under Development',method:'VM0033',year:2021,nprt_pct:null},
+  {id:'VCS3142',name:'Mozblue',country:'Mozambique',region:'Africa',lat:-19.2039,lng:34.8624,ecosystem:'Mangrove',area_ha:155000,credits_issued:44159,activities:'ARR',status:'Registration Requested',method:'VM0033',year:2024,nprt_pct:null},
+  {id:'VCS5365',name:'Egypt Coastal Mangroves',country:'Egypt',region:'Africa',lat:24.364785,lng:35.311695,ecosystem:'Mangrove',area_ha:6406,credits_issued:263361,activities:'ARR; WRC',status:'Registration Requested',method:'VM0033',year:2026,nprt_pct:null},
+  {id:'VCS4890',name:'Anlo Wetlands Ghana',country:'Ghana',region:'Africa',lat:5.836,lng:0.852,ecosystem:'Tidal Wetland',area_ha:1536,credits_issued:17842,activities:'ARR; WRC',status:'Registration Requested',method:'VM0033',year:2024,nprt_pct:null},
+  // ── VM0033 · Asia ───────────────────────────────────────────────────────────
+  {id:'VCS1493',name:'Aceh Mangrove Greenbelt',country:'Indonesia',region:'Asia',lat:4.65,lng:97.59,ecosystem:'Mangrove',area_ha:1000,credits_issued:124706,activities:'ARR',status:'Verification Requested',method:'VM0033',year:2011,nprt_pct:null},
+  {id:'VCS5834',name:'Delta Kapuas',country:'Indonesia',region:'Asia',lat:-0.574917,lng:109.356644,ecosystem:'Mangrove',area_ha:122119,credits_issued:2438716,activities:'ARR; REDD; WRC',status:'Under Development',method:'VM0033',year:2023,nprt_pct:null},
+  {id:'VCS5845',name:'Nunukan Mangrove & Peatland',country:'Indonesia',region:'Asia',lat:3.954773,lng:117.352101,ecosystem:'Mangrove',area_ha:15591,credits_issued:355275,activities:'ARR; REDD; WRC',status:'Under Validation',method:'VM0033',year:2026,nprt_pct:12,wrc_pct:97},
+  {id:'VCS5448',name:'Bluerizon Java',country:'Indonesia',region:'Asia',lat:-6.863333,lng:112.580556,ecosystem:'Mangrove',area_ha:3200,credits_issued:101974,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2026,nprt_pct:12,wrc_pct:19},
+  {id:'VCS5545',name:'YAKOPI',country:'Indonesia',region:'Asia',lat:0.554258,lng:97.758684,ecosystem:'Mangrove',area_ha:1100,credits_issued:38870,activities:'ARR; WRC',status:'Under Development',method:'VM0033',year:2022,nprt_pct:null},
+  {id:'VCS5032',name:'Kupu-Kupu',country:'Indonesia',region:'Asia',lat:-4.664624,lng:120.443324,ecosystem:'Mangrove',area_ha:66700,credits_issued:1045496,activities:'ARR; WRC',status:'Under Development',method:'VM0033',year:2024,nprt_pct:17},
+  {id:'VCS2250',name:'Delta Blue Carbon 1',country:'Pakistan',region:'Asia',lat:24.796665,lng:68.670276,ecosystem:'Mangrove',area_ha:350000,credits_issued:2407629,activities:'ARR; WRC',status:'Registered',method:'VM0033',year:2015,nprt_pct:12},
+  {id:'VCS5063',name:'Delta Blue Carbon 2',country:'Pakistan',region:'Asia',lat:24.142282,lng:68.470752,ecosystem:'Mangrove',area_ha:250000,credits_issued:2013864,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2023,nprt_pct:10},
+  {id:'VCS5874',name:'East Coast Mangroves Sri Lanka',country:'Sri Lanka',region:'Asia',lat:8.84153,lng:81.06837,ecosystem:'Mangrove',area_ha:4527,credits_issued:97963,activities:'WRC',status:'Under Development',method:'VM0033',year:2025,nprt_pct:20},
+  {id:'VCS5805',name:'Mangrove Mitra India',country:'India',region:'Asia',lat:21.545,lng:88.039,ecosystem:'Mangrove',area_ha:4000,credits_issued:50553,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2025,nprt_pct:20},
+  {id:'VCS5581',name:'Bangladesh Mangrove Restoration',country:'Bangladesh',region:'Asia',lat:21.867197,lng:90.392813,ecosystem:'Mangrove',area_ha:2085,credits_issued:37724,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2025,nprt_pct:null},
+  {id:'VCS5555',name:'Kosher Blue Carbon 2',country:'India',region:'Asia',lat:22.71,lng:88.7109,ecosystem:'Mangrove',area_ha:2000,credits_issued:57316,activities:'ARR',status:'Under Development',method:'VM0033',year:2023,nprt_pct:17},
+  {id:'VCS5522',name:'Grouped India Mangrove Restoration',country:'India',region:'Asia',lat:13.477133,lng:80.283725,ecosystem:'Mangrove',area_ha:4000,credits_issued:165058,activities:'WRC',status:'Under Development',method:'VM0033',year:2022,nprt_pct:null},
+  {id:'VCS5400',name:'Coastal India Mangrove Restoration',country:'India',region:'Asia',lat:20.533331,lng:88.083331,ecosystem:'Mangrove',area_ha:18276,credits_issued:82861,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2025,nprt_pct:12},
+  {id:'VCS5309',name:'Gujarat Mangrove Plantation',country:'India',region:'Asia',lat:21.503478,lng:72.654347,ecosystem:'Mangrove',area_ha:2888,credits_issued:69627,activities:'ARR; WRC',status:'Under Development',method:'VM0033',year:2022,nprt_pct:null},
+  {id:'VCS4607',name:'Kosher Blue Carbon 1',country:'India',region:'Asia',lat:22,lng:88,ecosystem:'Mangrove',area_ha:3000,credits_issued:82879,activities:'ARR',status:'Registration Requested',method:'VM0033',year:2023,nprt_pct:null},
+  {id:'VCS5207',name:'LTIM Mangrove India',country:'India',region:'Asia',lat:22,lng:88.8,ecosystem:'Mangrove',area_ha:156,credits_issued:3577,activities:'ARR',status:'Under Validation',method:'VM0033',year:2022,nprt_pct:null},
+  {id:'VCS4541',name:'Sundari Sundarbans',country:'India',region:'Asia',lat:21.791,lng:88.366,ecosystem:'Mangrove',area_ha:439,credits_issued:8497,activities:'ARR; WRC',status:'Registration Requested',method:'VM0033',year:2023,nprt_pct:12},
+  {id:'VCS3365',name:'Sundarban Tiger Reserve',country:'India',region:'Asia',lat:21.838051,lng:88.885277,ecosystem:'Mangrove',area_ha:615,credits_issued:16449,activities:'ARR; WRC',status:'Registration Requested',method:'VM0033',year:2018,nprt_pct:null},
+  {id:'VCS3818',name:'Myanmar Blue Carbon',country:'Myanmar',region:'Asia',lat:16.831542,lng:96.725775,ecosystem:'Mangrove',area_ha:3700,credits_issued:259130,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2021,nprt_pct:10},
+  {id:'VCS5050',name:'Myanmar Mangrove Restoration',country:'Myanmar',region:'Asia',lat:11.442918,lng:98.757277,ecosystem:'Mangrove',area_ha:7000,credits_issued:196274,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2023,nprt_pct:12,wrc_pct:15},
+  {id:'VCS3730',name:'Myanmar Climate Action',country:'Myanmar',region:'Asia',lat:10.977721,lng:98.697248,ecosystem:'Mangrove',area_ha:1500,credits_issued:58886,activities:'ARR; WRC',status:'Registration Requested',method:'VM0033',year:2022,nprt_pct:null},
+  {id:'VCS5071',name:'Cambodia Mangroves',country:'Cambodia',region:'Asia',lat:10.56883,lng:104.24146,ecosystem:'Mangrove',area_ha:3000,credits_issued:28650,activities:'ARR; REDD',status:'Under Validation',method:'VM0033',year:2025,nprt_pct:12},
+  {id:'VCS4194',name:'Hainan Mangroves',country:'China',region:'Asia',lat:19.758333,lng:109.289721,ecosystem:'Mangrove',area_ha:373,credits_issued:4839,activities:'ARR; WRC',status:'Under Development',method:'VM0033',year:2020,nprt_pct:null},
+  {id:'VCS4847',name:'Timor-Leste Mangroves',country:'Timor-Leste',region:'Asia',lat:-8.874217,lng:125.727539,ecosystem:'Mangrove',area_ha:500,credits_issued:7073,activities:'ARR',status:'Under Validation',method:'VM0033',year:2026,nprt_pct:12},
+  // ── VM0033 · Middle East ────────────────────────────────────────────────────
+  {id:'VCS5234',name:'Oman Blue Carbon',country:'Oman',region:'Middle East',lat:23.208138,lng:56.471972,ecosystem:'Mangrove',area_ha:2168,credits_issued:130723,activities:'ARR; WRC',status:'Registration Requested',method:'VM0033',year:2024,nprt_pct:25},
+  // ── VM0033 · Americas ───────────────────────────────────────────────────────
+  {id:'VCS2842',name:'BlueMX Atzlan',country:'Mexico',region:'Americas',lat:22.120638,lng:-105.506667,ecosystem:'Mangrove',area_ha:22000,credits_issued:307306,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2022,nprt_pct:25},
+  {id:'VCS5175',name:'Veracruz Mangroves for Life',country:'Mexico',region:'Americas',lat:18.700274,lng:-95.697777,ecosystem:'Mangrove',area_ha:2037,credits_issued:60629,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2023,nprt_pct:25,wrc_pct:16},
+  {id:'VCS5418',name:'Salvador WMA Baldcypress',country:'USA',region:'Americas',lat:29.792121,lng:-90.302172,ecosystem:'Tidal Wetland',area_ha:5985,credits_issued:61778,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2022,nprt_pct:13},
+  {id:'VCS2360',name:'Virginia Coast Reserve Seagrass',country:'USA',region:'Americas',lat:37.312711,lng:-75.839815,ecosystem:'Seagrass',area_ha:66452,credits_issued:1349,activities:'WRC',status:'Under Development',method:'VM0033',year:2015,nprt_pct:null},
+  // ── VM0033 · Europe ─────────────────────────────────────────────────────────
+  {id:'VCS3967',name:'Venice Lagoon',country:'Italy',region:'Europe',lat:45.56826,lng:12.503602,ecosystem:'Tidal Wetland',area_ha:1734,credits_issued:150531,activities:'ARR',status:'Under Validation',method:'VM0033',year:2022,nprt_pct:null},
+  // ── VM0071 · Seagrass (illustrative) ────────────────────────────────────────
+  {id:'VCS2388',name:'Gazi Bay Seagrass',country:'Kenya',region:'Africa',lat:-4.38,lng:39.51,ecosystem:'Seagrass',area_ha:340,credits_issued:28000,status:'Registered',method:'VM0071',year:2021},
+  {id:'VCS2435',name:'Mozambique Channel Seagrass',country:'Tanzania',region:'Africa',lat:-10.5,lng:40.8,ecosystem:'Seagrass',area_ha:5500,credits_issued:210000,status:'Validated',method:'VM0071',year:2023},
+  {id:'VCS2440',name:'Tunisia Coastal Posidonia',country:'Tunisia',region:'Africa',lat:37.0,lng:10.5,ecosystem:'Seagrass',area_ha:1600,credits_issued:55000,status:'Under Validation',method:'VM0071',year:2024},
+  {id:'VCS2195',name:'Guajira Peninsula Seagrass',country:'Colombia',region:'Americas',lat:11.8,lng:-72.5,ecosystem:'Seagrass',area_ha:4800,credits_issued:195000,status:'Registered',method:'VM0071',year:2018},
+  {id:'VCS2365',name:'Phang Nga Bay Seagrass',country:'Thailand',region:'Asia',lat:8.5,lng:98.5,ecosystem:'Seagrass',area_ha:3200,credits_issued:145000,status:'Validated',method:'VM0071',year:2022},
+  {id:'VCS2170',name:'Marovo Lagoon Seagrass',country:'Solomon Islands',region:'Pacific',lat:-8.6,lng:158.0,ecosystem:'Seagrass',area_ha:15000,credits_issued:580000,status:'Registered',method:'VM0071',year:2018},
+  {id:'VCS2345',name:'Rock Islands Seagrass',country:'Palau',region:'Pacific',lat:7.2,lng:134.5,ecosystem:'Seagrass',area_ha:1800,credits_issued:68000,status:'Registered',method:'VM0071',year:2021},
+  {id:'VCS2355',name:'Kaipara Harbour Seagrass',country:'New Zealand',region:'Oceania',lat:-36.4,lng:174.2,ecosystem:'Seagrass',area_ha:1200,credits_issued:45000,status:'Validated',method:'VM0071',year:2021},
+  {id:'VCS2425',name:'Mediterranean Seagrass',country:'Spain',region:'Europe',lat:39.6,lng:2.9,ecosystem:'Seagrass',area_ha:2500,credits_issued:88000,status:'Under Validation',method:'VM0071',year:2023},
+  // ── VM0024 · Tidal wetland / salt marsh (illustrative) ───────────────────────
+  {id:'VCS2295',name:'Volta Delta Wetlands',country:'Ghana',region:'Africa',lat:5.8,lng:0.9,ecosystem:'Tidal Wetland',area_ha:2200,credits_issued:210000,status:'Registered',method:'VM0024',year:2020},
+  {id:'VCS2445',name:'West Africa Salt Marsh',country:'Mauritania',region:'Africa',lat:18.2,lng:-16.1,ecosystem:'Salt Marsh',area_ha:3800,credits_issued:285000,status:'Under Validation',method:'VM0024',year:2024},
+  {id:'VCS2375',name:'Mindanao Coastal Wetlands',country:'Philippines',region:'Asia',lat:7.2,lng:125.8,ecosystem:'Tidal Wetland',area_ha:5500,credits_issued:490000,status:'Validated',method:'VM0024',year:2022},
+  {id:'VCS2225',name:'Tela Bay Wetlands',country:'Honduras',region:'Americas',lat:15.8,lng:-87.5,ecosystem:'Tidal Wetland',area_ha:4500,credits_issued:395000,status:'Registered',method:'VM0024',year:2019},
+  {id:'VCS2010',name:'Louisiana Coastal Wetlands',country:'USA',region:'Americas',lat:29.5,lng:-90.2,ecosystem:'Salt Marsh',area_ha:182000,credits_issued:18500000,status:'Registered',method:'VM0024',year:2012},
+  {id:'VCS2385',name:'Chesapeake Bay Salt Marsh',country:'USA',region:'Americas',lat:38.8,lng:-76.3,ecosystem:'Salt Marsh',area_ha:8500,credits_issued:620000,status:'Validated',method:'VM0024',year:2022},
+  {id:'VCS2265',name:'Nariva Swamp',country:'Trinidad & Tobago',region:'Americas',lat:10.4,lng:-61.0,ecosystem:'Tidal Wetland',area_ha:6200,credits_issued:555000,status:'Registered',method:'VM0024',year:2019},
+  {id:'VCS2395',name:'Kakadu Coastal Wetlands',country:'Australia',region:'Oceania',lat:-12.9,lng:132.4,ecosystem:'Tidal Wetland',area_ha:14000,credits_issued:1150000,status:'Registered',method:'VM0024',year:2022},
+  {id:'VCS2430',name:'Samoa Coastal Wetlands',country:'Samoa',region:'Pacific',lat:-13.7,lng:-172.1,ecosystem:'Tidal Wetland',area_ha:1200,credits_issued:95000,status:'Under Validation',method:'VM0024',year:2023},
+];
+
+
+// ════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════
+const ECO_COLORS={'Mangrove':'#00d4aa','Seagrass':'#0ea5e9','Salt Marsh':'#a78bfa','Tidal Wetland':'#34d399'};
+const ECO_BG={'Mangrove':'rgba(0,212,170,.18)','Seagrass':'rgba(14,165,233,.18)','Salt Marsh':'rgba(167,139,250,.18)','Tidal Wetland':'rgba(52,211,153,.18)'};
+const ECOSYSTEMS=['Mangrove','Seagrass','Salt Marsh','Tidal Wetland'];
+const REGIONS=['Africa','Asia','Americas','Pacific','Oceania','Middle East','Europe'];
+const RISK_COLORS=['','#22c55e','#86efac','#f59e0b','#f97316','#ef4444'];
+const RISK_LABELS=['','Low','Low-Med','Medium','High','Very High'];
+const COUNTRY_RISK={
+  'Kenya':{p:2,g:3,r:2},'Madagascar':{p:4,g:5,r:4},'Mozambique':{p:3,g:4,r:4},
+  'Tanzania':{p:3,g:4,r:3},'Senegal':{p:2,g:3,r:3},'Cameroon':{p:2,g:5,r:3},
+  'Gabon':{p:2,g:4,r:3},'Ghana':{p:2,g:3,r:3},'Guinea-Bissau':{p:2,g:5,r:3},
+  'Mauritania':{p:2,g:4,r:3},'Tunisia':{p:1,g:4,r:2},'Indonesia':{p:4,g:3,r:4},
+  'Vietnam':{p:5,g:4,r:4},'Philippines':{p:5,g:3,r:4},'Myanmar':{p:5,g:5,r:5},
+  'Bangladesh':{p:5,g:5,r:5},'India':{p:3,g:3,r:3},'Sri Lanka':{p:3,g:3,r:3},
+  'Cambodia':{p:4,g:5,r:5},'Thailand':{p:4,g:3,r:3},'Malaysia':{p:3,g:3,r:4},
+  'Colombia':{p:2,g:2,r:2},'Ecuador':{p:2,g:2,r:3},'Brazil':{p:2,g:2,r:4},
+  'Mexico':{p:3,g:3,r:3},'Honduras':{p:5,g:4,r:4},'Guatemala':{p:4,g:4,r:4},
+  'USA':{p:1,g:1,r:1},'Trinidad & Tobago':{p:4,g:3,r:3},'Peru':{p:2,g:2,r:3},
+  'Dominican Republic':{p:5,g:3,r:3},'Belize':{p:4,g:3,r:3},'Panama':{p:4,g:2,r:3},
+  'Fiji':{p:5,g:2,r:2},'Solomon Islands':{p:5,g:4,r:3},'Papua New Guinea':{p:4,g:5,r:5},
+  'Palau':{p:5,g:3,r:2},'Micronesia':{p:5,g:3,r:2},'Vanuatu':{p:5,g:4,r:3},
+  'Samoa':{p:5,g:3,r:2},'Australia':{p:1,g:1,r:1},'New Zealand':{p:1,g:1,r:1},
+  'UAE':{p:2,g:2,r:1},'Oman':{p:2,g:2,r:1},'Spain':{p:1,g:1,r:1},
+  'Guinea':{p:4,g:5,r:4},'Sierra Leone':{p:3,g:5,r:4},'Nigeria':{p:4,g:4,r:4},
+  'Djibouti':{p:3,g:4,r:3},'Egypt':{p:2,g:4,r:3},'China':{p:3,g:2,r:2},
+  'Timor-Leste':{p:4,g:4,r:4},'Italy':{p:1,g:2,r:1},'Pakistan':{p:4,g:4,r:4},
+};
+function riskScore(country){const r=COUNTRY_RISK[country]||{p:3,g:3,r:3};return Math.round((r.p+r.g+r.r)/3)}
+
+// simplified continent outlines [lng, lat]
+const CONTINENTS=[
+  [[-18,14],[-5,10],[0,4],[8,-2],[15,-18],[20,-35],[28,-33],[38,-20],[42,-12],[52,10],[42,14],[38,20],[35,25],[30,30],[20,35],[10,37],[-5,36],[-15,22],[-18,14]], // Africa
+  [[-10,36],[28,36],[38,45],[38,55],[28,62],[22,70],[14,70],[8,58],[0,50],[-10,50],[-10,36]], // Europe
+  [[26,36],[55,25],[65,22],[78,12],[100,5],[105,0],[115,-5],[125,5],[120,15],[130,30],[120,52],[128,55],[135,35],[145,40],[150,45],[155,52],[168,58],[180,66],[165,72],[110,72],[60,72],[40,70],[26,62],[38,55],[38,45],[26,36]], // Asia
+  [[-170,72],[-140,72],[-128,55],[-120,48],[-100,48],[-88,30],[-82,24],[-78,8],[-76,8],[-80,5],[-83,8],[-86,20],[-90,20],[-95,30],[-100,30],[-115,32],[-120,38],[-124,48],[-130,55],[-140,58],[-165,60],[-170,72]], // N America
+  [[-80,10],[-76,8],[-70,12],[-62,10],[-50,5],[-35,-3],[-34,-10],[-38,-18],[-40,-22],[-40,-28],[-52,-34],[-62,-52],[-68,-54],[-74,-50],[-75,-42],[-72,-30],[-68,-22],[-70,-15],[-77,-2],[-80,5],[-80,10]], // S America
+  [[113,-22],[120,-18],[130,-12],[138,-12],[148,-20],[154,-26],[152,-38],[143,-38],[134,-32],[120,-20],[113,-22]], // Australia
+  [[-44,84],[-60,82],[-72,76],[-60,68],[-46,68],[-40,72],[-44,84]], // Greenland
+];
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let colourMode='eco', sizeMode='dot', sortCol='credits_issued', sortDir=-1, searchVal='', selectedProject=null;
+
+// ════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════
+function computeThresholds(ps){
+  const s=[...ps].sort((a,b)=>a.area_ha-b.area_ha);
+  return{p33:s[Math.floor(s.length*.33)].area_ha, p66:s[Math.floor(s.length*.66)].area_ha};
+}
+let THRESH=computeThresholds(PROJECTS);
+function sizeClass(ha){return ha<THRESH.p33?'Small':ha<THRESH.p66?'Medium':'Large'}
+function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':n.toLocaleString()}
+function fmtFull(n){return n.toLocaleString()}
+
+function matchActivity(p, filter){
+  if(!filter) return true;
+  const a = p.activities||'';
+  if(filter==='ARR') return a.includes('ARR');
+  if(filter==='REDD') return a.includes('REDD');
+  if(filter==='WRC-only') return a==='WRC';
+  return true;
+}
+function getFiltered(){
+  const eco=document.getElementById('f-eco').value;
+  const reg=document.getElementById('f-region').value;
+  const sta=document.getElementById('f-status').value;
+  const sz=document.getElementById('f-size').value;
+  const mth=document.getElementById('f-method').value;
+  const act=document.getElementById('f-activity').value;
+  const nprt=document.getElementById('f-nprt').value;
+  // Compute thresholds from the non-size-filtered set so bands reflect the active ecosystem/region/method context
+  const base=PROJECTS.filter(p=>(!eco||p.ecosystem===eco)&&(!reg||p.region===reg)&&(!mth||p.method===mth)&&(!sta||p.status===sta)&&matchActivity(p,act)&&(!nprt||(nprt==='flagged'?p.nprt_pct!=null&&p.nprt_pct<15:p.nprt_pct!=null)));
+  if(base.length>=3) THRESH=computeThresholds(base);
+  return sz?base.filter(p=>sizeClass(p.area_ha)===sz):base;
+}
+
+// ════════════════════════════════════════════
+// CANVAS MAP — vector countries, zoom/pan
+// ════════════════════════════════════════════
+const mapCanvas=document.getElementById('main-map');
+const mapCtx=mapCanvas.getContext('2d');
+const mapTooltip=document.getElementById('map-tooltip');
+
+const MAP_LNG_MIN=-180,MAP_LNG_MAX=180,MAP_LAT_MAX=83,MAP_LAT_MIN=-56;
+let vp={k:1,x:0,y:0};
+let _isDragging=false,_dragLast={x:0,y:0};
+let worldGeo=null,_mapProjects=[];
+
+function initMapCanvas(){
+  const W=mapCanvas.parentElement.clientWidth||900;
+  mapCanvas.width=W; mapCanvas.height=440;
+}
+// Base projection (scale=1, no pan) → canvas px
+function bx(lng){return(lng-MAP_LNG_MIN)/(MAP_LNG_MAX-MAP_LNG_MIN)*mapCanvas.width}
+function by(lat){return(MAP_LAT_MAX-lat)/(MAP_LAT_MAX-MAP_LAT_MIN)*mapCanvas.height}
+// Viewport-transformed
+function px(lng){return bx(lng)*vp.k+vp.x}
+function py(lat){return by(lat)*vp.k+vp.y}
+// Marker radius helper (shared by draw + hit-test)
+function markerR(p){
+  if(sizeMode==='area'){
+    const mpp=40075016/mapCanvas.width;
+    return Math.max(5,Math.min(mapCanvas.width*.22,Math.sqrt(p.area_ha*10000/Math.PI)/mpp*vp.k));
+  }
+  return Math.max(5,Math.min(24,Math.sqrt(p.area_ha/380)));
+}
+
+function drawMap(projects){
+  const ctx=mapCtx,W=mapCanvas.width,H=mapCanvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#040d1e'; ctx.fillRect(0,0,W,H);
+  ctx.save(); ctx.beginPath(); ctx.rect(0,0,W,H); ctx.clip();
+  // Graticule
+  ctx.strokeStyle='rgba(30,51,88,.3)'; ctx.lineWidth=.5;
+  for(let ln=-180;ln<=180;ln+=30){ctx.beginPath();ctx.moveTo(px(ln),0);ctx.lineTo(px(ln),H);ctx.stroke()}
+  for(let lt=-60;lt<=80;lt+=30){ctx.beginPath();ctx.moveTo(0,py(lt));ctx.lineTo(W,py(lt));ctx.stroke()}
+  ctx.strokeStyle='rgba(45,84,144,.7)'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,py(0));ctx.lineTo(W,py(0));ctx.stroke();
+  // Country polygons (world-atlas) or simplified continent fallback
+  if(worldGeo){
+    const drawRing=ring=>{ring.forEach(([lng,lat],i)=>{const x=px(lng),y=py(lat);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.closePath()};
+    ctx.beginPath();
+    worldGeo.features.forEach(f=>{
+      const g=f.geometry;
+      if(g.type==='Polygon') g.coordinates.forEach(drawRing);
+      else if(g.type==='MultiPolygon') g.coordinates.forEach(poly=>poly.forEach(drawRing));
+    });
+    ctx.fillStyle='#1a3558'; ctx.fill();
+    ctx.strokeStyle='#2d5490'; ctx.lineWidth=Math.max(0.3,0.8/vp.k); ctx.stroke();
+  } else {
+    CONTINENTS.forEach(pts=>{
+      ctx.beginPath();
+      pts.forEach(([lng,lat],i)=>i===0?ctx.moveTo(px(lng),py(lat)):ctx.lineTo(px(lng),py(lat)));
+      ctx.closePath();
+      ctx.fillStyle='#1f3a60'; ctx.fill();
+      ctx.strokeStyle='#2d5490'; ctx.lineWidth=.9; ctx.stroke();
+    });
+  }
+  // Markers — largest area first so small dots render on top
+  const hasSel=selectedProject!==null;
+  [...projects].sort((a,b)=>b.area_ha-a.area_ha).forEach(p=>{
+    const isSel=hasSel&&p.id===selectedProject.id;
+    const rs=riskScore(p.country);
+    const color=colourMode==='risk'?RISK_COLORS[rs]:ECO_COLORS[p.ecosystem];
+    const r=markerR(p);
+    ctx.globalAlpha=hasSel&&!isSel?0.25:1;
+    ctx.beginPath(); ctx.arc(px(p.lng),py(p.lat),r,0,Math.PI*2);
+    ctx.fillStyle=color+(sizeMode==='area'?'38':'55'); ctx.fill();
+    ctx.strokeStyle=color; ctx.lineWidth=isSel?2.5:1.5; ctx.stroke();
+    if(isSel){
+      ctx.beginPath(); ctx.arc(px(p.lng),py(p.lat),r+5,0,Math.PI*2);
+      ctx.strokeStyle=color; ctx.lineWidth=1.5; ctx.globalAlpha=0.5; ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  });
+  ctx.restore();
+}
+
+
+// ════════════════════════════════════════════
+// PROJECT SELECTION
+// ════════════════════════════════════════════
+function selectProject(p){
+  selectedProject=p;
+  updateSelectedPanel(p);
+  const filtered=getFiltered();
+  updateStats([p],filtered.length);
+  initCharts([p]);
+  renderMap(filtered);
+  renderBubbleChart(filtered);
+  renderTable(filtered);
+  setTimeout(()=>{
+    const row=document.querySelector('table.projects tr.row-selected');
+    if(row) row.scrollIntoView({behavior:'smooth',block:'nearest'});
+  },50);
+}
+function deselectProject(){
+  selectedProject=null;
+  updateSelectedPanel(null);
+  const filtered=getFiltered();
+  updateStats(filtered,filtered.length);
+  initCharts(filtered);
+  renderMap(filtered);
+  renderBubbleChart(filtered);
+  renderTable(filtered);
+}
+function updateSelectedPanel(p){
+  const panel=document.getElementById('selected-panel');
+  if(!p){panel.style.display='none';return;}
+  const rs=riskScore(p.country);
+  const nprtVal=p.nprt_pct!=null?p.nprt_pct+'%'+(p.nprt_pct<15?' ⚠':''):'not in PD';
+  const nprtCol=p.nprt_pct!=null?(p.nprt_pct<15?'var(--red)':p.nprt_pct<20?'var(--amber)':'var(--green)'):'var(--muted)';
+  const ecoCol=ECO_COLORS[p.ecosystem];
+  panel.style.display='flex';
+  panel.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:1px;margin-right:8px">
+      <div style="font-size:14px;font-weight:700;color:var(--text)">${p.name}</div>
+      <div style="font-size:11px;color:var(--muted)">${p.id} · ${p.country} · ${p.region}</div>
+      <span style="margin-top:3px;display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:500;background:${ECO_BG[p.ecosystem]};color:${ecoCol};width:fit-content">${p.ecosystem}</span>
+    </div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;flex:1">
+      <div class="sel-stat"><div class="sel-label">Area</div><div class="sel-val">${fmtFull(p.area_ha)} ha · ${sizeClass(p.area_ha)}</div></div>
+      <div class="sel-stat"><div class="sel-label">Est. Annual</div><div class="sel-val">${fmt(p.credits_issued)} tCO₂e/yr</div></div>
+      <div class="sel-stat"><div class="sel-label">Activities</div><div class="sel-val" style="font-size:12px">${p.activities||'—'}</div></div>
+      <div class="sel-stat"><div class="sel-label">NPRT Buffer</div><div class="sel-val" style="color:${nprtCol}">${nprtVal}</div></div>
+      ${p.wrc_pct!=null?`<div class="sel-stat" style="min-width:110px"><div class="sel-label">SOC / Biomass split</div><div class="sel-val"><div style="display:flex;gap:6px;align-items:center"><div style="display:flex;width:72px;height:8px;border-radius:4px;overflow:hidden;border:1px solid rgba(255,255,255,.1)"><div style="width:${100-p.wrc_pct}%;background:#00d4aa" title="ARR biomass ${100-p.wrc_pct}%"></div><div style="width:${p.wrc_pct}%;background:#0ea5e9" title="WRC/SOC ${p.wrc_pct}%"></div></div><span style="font-size:11px;color:var(--muted)">${p.wrc_pct}% SOC · ${100-p.wrc_pct}% biomass</span></div></div></div>`:''}
+      <div class="sel-stat"><div class="sel-label">Country Risk</div><div class="sel-val" style="color:${RISK_COLORS[rs]}">${RISK_LABELS[rs]}</div></div>
+      <div class="sel-stat"><div class="sel-label">Method</div><div class="sel-val" style="color:var(--muted);font-size:12px">${p.method}</div></div>
+      <div class="sel-stat"><div class="sel-label">Reg. Year</div><div class="sel-val">${p.year}</div></div>
+    </div>
+    <button class="sel-dismiss" onclick="deselectProject()">✕ Clear</button>
+  `;
+}
+function renderMap(projects){_mapProjects=projects;drawMap(projects);renderMapLegend();}
+
+// ── Zoom (wheel, centred on cursor) ──
+mapCanvas.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const factor=e.deltaY<0?1.3:1/1.3;
+  const rect=mapCanvas.getBoundingClientRect();
+  const sx=mapCanvas.width/rect.width;
+  const mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+  vp.x=mx+(vp.x-mx)*factor; vp.y=my+(vp.y-my)*factor;
+  vp.k=Math.max(0.9,Math.min(20,vp.k*factor));
+  drawMap(_mapProjects);
+},{passive:false});
+
+// ── Pan (drag) ──
+mapCanvas.addEventListener('mousedown',e=>{
+  if(e.button!==0)return;
+  _isDragging=true; _dragLast={x:e.clientX,y:e.clientY};
+  mapCanvas.style.cursor='grabbing';
+});
+window.addEventListener('mousemove',e=>{
+  if(!_isDragging)return;
+  const rect=mapCanvas.getBoundingClientRect();
+  const sx=mapCanvas.width/rect.width;
+  vp.x+=(e.clientX-_dragLast.x)*sx; vp.y+=(e.clientY-_dragLast.y)*sx;
+  _dragLast={x:e.clientX,y:e.clientY};
+  drawMap(_mapProjects);
+});
+window.addEventListener('mouseup',()=>{if(_isDragging){_isDragging=false;mapCanvas.style.cursor='crosshair';}});
+
+// ── Double-click / Reset button ──
+function resetMapView(){vp={k:1,x:0,y:0};drawMap(_mapProjects);}
+mapCanvas.addEventListener('dblclick',resetMapView);
+document.getElementById('map-reset-btn').addEventListener('click',resetMapView);
+
+// ── Hover tooltip ──
+mapCanvas.addEventListener('mousemove',e=>{
+  if(_isDragging){mapTooltip.style.display='none';return;}
+  const rect=mapCanvas.getBoundingClientRect();
+  const sx=mapCanvas.width/rect.width;
+  const mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+  let hit=null, best=Infinity;
+  for(const p of _mapProjects){
+    const d=Math.sqrt((mx-px(p.lng))**2+(my-py(p.lat))**2);
+    if(d<=markerR(p)+4&&d<best){hit=p;best=d;}
+  }
+  if(hit){
+    const rs=riskScore(hit.country), col=ECO_COLORS[hit.ecosystem];
+    const tx=Math.min(e.offsetX+16,rect.width-220), ty=Math.max(e.offsetY-10,4);
+    mapTooltip.style.left=tx+'px'; mapTooltip.style.top=ty+'px'; mapTooltip.style.display='block';
+    mapTooltip.innerHTML=`<div class="popup-name">${hit.name}</div>
+      <span class="popup-eco" style="background:${ECO_BG[hit.ecosystem]};color:${col}">${hit.ecosystem}</span>
+      <div style="margin-top:8px">
+        <div class="popup-row"><span>Country</span><span>${hit.country}</span></div>
+        <div class="popup-row"><span>Area</span><span>${fmtFull(hit.area_ha)} ha · ${sizeClass(hit.area_ha)}</span></div>
+        <div class="popup-row"><span>Activities</span><span>${hit.activities||'—'}</span></div>
+        <div class="popup-row"><span>Est. Annual</span><span>${fmt(hit.credits_issued)} tCO2e/yr</span></div>
+        <div class="popup-row"><span>Status</span><span>${hit.status}</span></div>
+        <div class="popup-row"><span>Risk</span><span style="color:${RISK_COLORS[rs]}">${RISK_LABELS[rs]}</span></div>
+        ${hit.nprt_pct!=null?`<div class="popup-row"><span>NPRT Buffer</span><span style="color:${hit.nprt_pct<15?'#f87171':hit.nprt_pct<20?'#f59e0b':'#34d399'};font-weight:600">${hit.nprt_pct}%${hit.nprt_pct<15?' ⚠':''}</span></div>`:`<div class="popup-row"><span>NPRT Buffer</span><span style="color:var(--muted);font-size:11px">not yet in PD</span></div>`}
+      </div>`;
+    mapCanvas.style.cursor='pointer';
+  } else {
+    mapTooltip.style.display='none';
+    mapCanvas.style.cursor='crosshair';
+  }
+});
+mapCanvas.addEventListener('mouseleave',()=>{mapTooltip.style.display='none';});
+
+mapCanvas.addEventListener('click',e=>{
+  if(_isDragging) return;
+  const rect=mapCanvas.getBoundingClientRect();
+  const sx=mapCanvas.width/rect.width;
+  const mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
+  let hit=null, best=Infinity;
+  for(const p of _mapProjects){
+    const d=Math.sqrt((mx-px(p.lng))**2+(my-py(p.lat))**2);
+    if(d<=markerR(p)+4&&d<best){hit=p;best=d;}
+  }
+  if(hit){
+    if(selectedProject&&selectedProject.id===hit.id) deselectProject();
+    else selectProject(hit);
+  } else {
+    deselectProject();
+  }
+});
+
+
+window.addEventListener('resize',()=>{
+  const W=mapCanvas.parentElement.clientWidth||900;
+  mapCanvas.width=W; mapCanvas.height=440;
+  drawMap(_mapProjects);
+});
+
+// ── Load proper country geometry from CDN (vector JSON, not tile images) ──
+fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  .then(r=>r.json())
+  .then(topo=>{worldGeo=topojson.feature(topo,topo.objects.countries);if(_mapProjects.length)drawMap(_mapProjects);})
+  .catch(()=>{/* continent fallback already rendered */});
+
+function renderMapLegend(){
+  const el=document.getElementById('map-legend');
+  if(colourMode==='eco'){
+    el.innerHTML=`<div class="map-legend-title">Ecosystem</div>`+ECOSYSTEMS.map(e=>`<div class="legend-row"><div class="legend-dot" style="background:${ECO_COLORS[e]}"></div><div>${e}</div></div>`).join('');
+  } else {
+    el.innerHTML=`<div class="map-legend-title">Risk Score</div>`+[5,4,3,2,1].map(s=>`<div class="legend-row"><div class="legend-dot" style="background:${RISK_COLORS[s]}"></div><div>${RISK_LABELS[s]}</div></div>`).join('');
+  }
+}
+
+// ════════════════════════════════════════════
+// BUBBLE CHART (Chart.js + canvas world map)
+// ════════════════════════════════════════════
+let bubbleChart=null;
+const worldMapPlugin={
+  id:'worldmap',
+  beforeDraw(chart){
+    const{ctx,chartArea:{left,top,right,bottom}}=chart;
+    const w=right-left, h=bottom-top;
+    const LNG_MIN=-180,LNG_MAX=180,LAT_MAX=80,LAT_MIN=-60;
+    const toX=lng=>left+(lng-LNG_MIN)/(LNG_MAX-LNG_MIN)*w;
+    const toY=lat=>top+(LAT_MAX-lat)/(LAT_MAX-LAT_MIN)*h;
+    ctx.save();
+    ctx.fillStyle='#040d18';
+    ctx.fillRect(left,top,w,h);
+    // graticule lines
+    ctx.strokeStyle='rgba(30,51,88,.35)';ctx.lineWidth=.5;
+    for(let ln=-150;ln<=150;ln+=30){ctx.beginPath();ctx.moveTo(toX(ln),top);ctx.lineTo(toX(ln),bottom);ctx.stroke()}
+    for(let lt=-30;lt<=60;lt+=30){ctx.beginPath();ctx.moveTo(left,toY(lt));ctx.lineTo(right,toY(lt));ctx.stroke()}
+    // equator
+    ctx.strokeStyle='rgba(30,51,88,.6)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(left,toY(0));ctx.lineTo(right,toY(0));ctx.stroke();
+    // continents
+    CONTINENTS.forEach(pts=>{
+      ctx.beginPath();
+      pts.forEach(([lng,lat],i)=>{const x=toX(lng),y=toY(lat);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});
+      ctx.closePath();
+      ctx.fillStyle='#1a2744';ctx.fill();
+      ctx.strokeStyle='#243660';ctx.lineWidth=.8;ctx.stroke();
+    });
+    ctx.restore();
+  }
+};
+
+function renderBubbleChart(projects){
+  const canvas=document.getElementById('bubble-canvas');
+  const datasets=ECOSYSTEMS.map(e=>({
+    label:e,
+    data:projects.filter(p=>p.ecosystem===e).map(p=>({
+      x:p.lng, y:p.lat,
+      r:Math.max(4,Math.min(45,Math.sqrt(p.credits_issued/5500))),
+      name:p.name, country:p.country, credits:p.credits_issued, area:p.area_ha, _proj:p,
+    })),
+    backgroundColor:ECO_COLORS[e]+(selectedProject?'33':'55'),
+    borderColor:ECO_COLORS[e]+(selectedProject?'55':''),
+    borderWidth:1.5,
+    hoverBackgroundColor:ECO_COLORS[e]+'cc',
+  }));
+  // Selection ring overlay — white ring around the selected bubble
+  if(selectedProject&&projects.find(p=>p.id===selectedProject.id)){
+    const sp=selectedProject;
+    datasets.push({
+      label:'',
+      data:[{x:sp.lng,y:sp.lat,
+             r:Math.max(4,Math.min(45,Math.sqrt(sp.credits_issued/5500)))+7,
+             name:sp.name,country:sp.country,credits:sp.credits_issued,area:sp.area_ha,_proj:sp}],
+      backgroundColor:'rgba(0,0,0,0)',
+      borderColor:'rgba(255,255,255,0.9)',
+      borderWidth:2.5,
+      hoverBackgroundColor:'rgba(0,0,0,0)',
+    });
+  }
+  if(bubbleChart) bubbleChart.destroy();
+  bubbleChart=new Chart(canvas,{
+    type:'bubble',
+    data:{datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      onClick:(evt,els)=>{if(els.length){const d=bubbleChart.data.datasets[els[0].datasetIndex].data[els[0].index];if(d._proj){selectedProject&&selectedProject.id===d._proj.id?deselectProject():selectProject(d._proj);}}else deselectProject();},
+      scales:{
+        x:{min:-180,max:180,display:false},
+        y:{min:-60,max:80,display:false},
+      },
+      plugins:{
+        legend:{display:true,position:'bottom',labels:{color:'#8ba7c9',boxWidth:12,font:{size:12},padding:14,
+          filter:item=>item.text!==''}},
+        tooltip:{
+          backgroundColor:'#162540',borderColor:'#1e3358',borderWidth:1,
+          titleColor:'#e2eeff',bodyColor:'#8ba7c9',padding:10,cornerRadius:6,
+          callbacks:{
+            title:items=>{const d=items[0].raw;return d.name},
+            label:item=>{const d=item.raw;return[` ${d.country}`,` Credits: ${fmt(d.credits)} VCUs`,` Area: ${fmtFull(d.area)} ha`]},
+          },
+        },
+      },
+    },
+    plugins:[worldMapPlugin],
+  });
+}
+
+// ════════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════════
+function updateStats(projects,totalFiltered){
+  if(totalFiltered===undefined) totalFiltered=projects.length;
+  const isSingle=selectedProject!==null&&projects.length===1;
+  if(!projects.length) return;
+  const countries=new Set(projects.map(p=>p.country)).size;
+  const totalArea=projects.reduce((s,p)=>s+p.area_ha,0);
+  const totalCred=projects.reduce((s,p)=>s+p.credits_issued,0);
+  const biggest=projects.reduce((a,b)=>b.credits_issued>a.credits_issued?b:a,projects[0]);
+  document.getElementById('s-projects').textContent=projects.length;
+  document.getElementById('s-countries').textContent=isSingle?projects[0].country:`${countries} countries`;
+  document.getElementById('s-area').textContent=fmt(totalArea);
+  document.getElementById('s-credits').textContent=fmt(totalCred);
+  if(biggest){
+    document.getElementById('s-largest').textContent=isSingle?biggest.name:fmt(biggest.credits_issued);
+    document.getElementById('s-largest-name').textContent=isSingle?`${biggest.method} · ${biggest.status}`:'by est. annual reductions';
+  }
+  if(isSingle){
+    const sp=projects[0];
+    document.getElementById('sl-largest').textContent='Selected Project';
+    document.getElementById('sl-area').textContent='Area';
+    document.getElementById('s-area-sub').textContent=`${sp.ecosystem} · ${sizeClass(sp.area_ha)}`;
+    document.getElementById('sl-credits').textContent='Est. Annual (tCO₂e)';
+    document.getElementById('s-credits-sub').textContent=`${sp.activities||'—'} · ${sp.region}`;
+    const nprtText=sp.nprt_pct!=null?sp.nprt_pct+'%'+(sp.nprt_pct<15?' ⚠':''):'not in PD';
+    const nprtCol=sp.nprt_pct!=null?(sp.nprt_pct<15?'var(--red)':sp.nprt_pct<20?'var(--amber)':'var(--green)'):'var(--muted)';
+    document.getElementById('s-flagged').style.color=nprtCol;
+    document.getElementById('s-flagged').textContent=nprtText;
+    document.getElementById('s-flagged-sub').textContent='NPRT buffer pool %';
+    document.getElementById('filter-count').textContent=`1 selected · ${totalFiltered} filtered`;
+  } else {
+    document.getElementById('sl-largest').textContent='Largest Project';
+    document.getElementById('sl-area').textContent='Total Area';
+    document.getElementById('s-area-sub').textContent='hectares';
+    document.getElementById('sl-credits').textContent='Est. Annual (tCO₂e)';
+    document.getElementById('s-credits-sub').textContent='sum of Verra-registered annual reductions';
+    document.getElementById('s-flagged').style.color='var(--red)';
+    const vm33=projects.filter(p=>p.method==='VM0033');
+    const confirmed=vm33.filter(p=>p.nprt_pct!=null);
+    const flagged=confirmed.filter(p=>p.nprt_pct<15);
+    document.getElementById('s-flagged').textContent=`${flagged.length} / ${confirmed.length}`;
+    document.getElementById('s-flagged-sub').textContent=`VM0033 w/ buffer < 15% (of ${confirmed.length} confirmed)`;
+    document.getElementById('filter-count').textContent=
+      totalFiltered===PROJECTS.length?`All ${PROJECTS.length} projects`:`${totalFiltered} of ${PROJECTS.length} shown`;
+  }
+}
+
+// ════════════════════════════════════════════
+// CHARTS
+// ════════════════════════════════════════════
+const TT={backgroundColor:'#162540',borderColor:'#1e3358',borderWidth:1,titleColor:'#e2eeff',bodyColor:'#8ba7c9',padding:10,cornerRadius:6};
+let chartEco,chartStatus,chartRegion;
+
+function initCharts(projects){
+  const isSingle=selectedProject!==null&&projects.length===1;
+  const sp=isSingle?projects[0]:null;
+  // Update chart context subtitles
+  document.getElementById('eco-sub').textContent=isSingle
+    ?`${sp.ecosystem} · ${sp.credits_issued.toLocaleString()} tCO₂e/yr`
+    :'by est. annual reductions';
+  document.getElementById('status-sub').textContent=isSingle
+    ?`Status: ${sp.status}`
+    :'by count';
+  document.getElementById('region-sub').textContent=isSingle
+    ?`${sp.region} · ${sp.country}`
+    :'tCO2e/yr (Verra-registered) — Asia dominates at ~60% of global total';
+
+  // ── Ecosystem donut by CREDITS ──
+  const ecoCredits={};ECOSYSTEMS.forEach(e=>ecoCredits[e]=0);
+  projects.forEach(p=>ecoCredits[p.ecosystem]+=p.credits_issued);
+  const ed=ECOSYSTEMS.map(e=>ecoCredits[e]);
+  const et=ed.reduce((a,b)=>a+b,0);
+  if(chartEco) chartEco.destroy();
+  chartEco=new Chart(document.getElementById('chart-eco'),{
+    type:'doughnut',
+    data:{labels:ECOSYSTEMS,datasets:[{data:ed,backgroundColor:ECOSYSTEMS.map(e=>ECO_COLORS[e]),borderWidth:0,hoverOffset:4}]},
+    options:{cutout:'68%',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.label}: ${fmt(c.raw)} VCUs (${Math.round(c.raw/et*100)}%)`}}}},
+  });
+  document.getElementById('eco-legend').innerHTML=ECOSYSTEMS.map((e,i)=>`
+    <div class="donut-legend-row">
+      <div class="donut-legend-label"><div class="donut-dot" style="background:${ECO_COLORS[e]}"></div>${e}</div>
+      <div class="donut-val">${fmt(ed[i])} · ${Math.round(ed[i]/et*100)}%</div>
+    </div>`).join('');
+
+  // ── Status donut ──
+  const statuses=['Registered','Verification Requested','Registration Requested','Validated','Under Validation','Under Development'];
+  const statColors=['#00d4aa','#34d399','#0ea5e9','#60a5fa','#f59e0b','#64748b'];
+  const statCts=statuses.map(s=>projects.filter(p=>p.status===s).length);
+  const statT=statCts.reduce((a,b)=>a+b,0);
+  if(chartStatus) chartStatus.destroy();
+  chartStatus=new Chart(document.getElementById('chart-status'),{
+    type:'doughnut',
+    data:{labels:statuses,datasets:[{data:statCts,backgroundColor:statColors,borderWidth:0,hoverOffset:4}]},
+    options:{cutout:'68%',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.label}: ${c.raw} (${Math.round(c.raw/statT*100)}%)`}}}},
+  });
+  document.getElementById('status-legend').innerHTML=statuses.map((s,i)=>`
+    <div class="donut-legend-row">
+      <div class="donut-legend-label"><div class="donut-dot" style="background:${statColors[i]}"></div>${s}</div>
+      <div class="donut-val">${statCts[i]} · ${Math.round(statCts[i]/statT*100)}%</div>
+    </div>`).join('');
+
+  // ── Region chart: PRIMARY = credits_issued ──
+  const rd={};REGIONS.forEach(r=>rd[r]={credits:0,count:0});
+  projects.forEach(p=>{if(rd[p.region]){rd[p.region].credits+=p.credits_issued;rd[p.region].count++}});
+  const ar=REGIONS.filter(r=>rd[r].count>0).sort((a,b)=>rd[b].credits-rd[a].credits);
+  const totalCredAll=ar.reduce((s,r)=>s+rd[r].credits,0);
+  if(chartRegion) chartRegion.destroy();
+  chartRegion=new Chart(document.getElementById('chart-region'),{
+    type:'bar',
+    data:{labels:ar,datasets:[
+      {label:'Est. Annual (M tCO2e/yr)',data:ar.map(r=>+(rd[r].credits/1e6).toFixed(1)),backgroundColor:ar.map(r=>r==='Asia'?'#00d4aa':'rgba(14,165,233,.55)'),borderRadius:4,yAxisID:'y'},
+      {label:'Projects',data:ar.map(r=>rd[r].count),backgroundColor:'rgba(245,158,11,.35)',borderColor:'#f59e0b',borderWidth:1.5,borderRadius:4,yAxisID:'y2',type:'bar'},
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{ticks:{color:'#7a9abf',font:{size:11}},grid:{color:'rgba(30,51,88,.5)'}},
+        y:{ticks:{color:'#00d4aa',font:{size:11}},grid:{color:'rgba(30,51,88,.4)'},title:{display:true,text:'Credits (M VCUs)',color:'#00d4aa',font:{size:10}}},
+        y2:{position:'right',ticks:{color:'#f59e0b',font:{size:11}},grid:{display:false},title:{display:true,text:'# Projects',color:'#f59e0b',font:{size:10}}},
+      },
+      plugins:{legend:{display:true,position:'bottom',labels:{color:'#7a9abf',boxWidth:10,font:{size:11},padding:10}},
+        tooltip:{...TT,callbacks:{label:c=>{const r=ar[c.dataIndex];return c.datasetIndex===0?` ${fmt(rd[r].credits)} VCUs (${Math.round(rd[r].credits/totalCredAll*100)}%)`:` ${rd[r].count} projects`}}}},
+    },
+  });
+
+  // ── Size band table ──
+  renderSizeTable(projects);
+}
+
+// ════════════════════════════════════════════
+// SIZE BAND TABLE
+// ════════════════════════════════════════════
+function renderSizeTable(projects){
+  const bands=['Small','Medium','Large'];
+  const colors=['#60a5fa','#f59e0b','#f87171'];
+  const rows=bands.map(b=>{
+    const ps=projects.filter(p=>sizeClass(p.area_ha)===b);
+    const area=ps.reduce((s,p)=>s+p.area_ha,0);
+    const cred=ps.reduce((s,p)=>s+p.credits_issued,0);
+    return{band:b,count:ps.length,area,cred};
+  });
+  const totCount=rows.reduce((s,r)=>s+r.count,0);
+  const totArea=rows.reduce((s,r)=>s+r.area,0);
+  const totCred=rows.reduce((s,r)=>s+r.cred,0);
+
+  const rangeLabel={'Small':`< ${fmtFull(THRESH.p33)} ha`,'Medium':`${fmtFull(THRESH.p33)} – ${fmtFull(THRESH.p66)} ha`,'Large':`> ${fmtFull(THRESH.p66)} ha`};
+
+  document.getElementById('size-table').innerHTML=
+    `<thead><tr><th>Band</th><th>Range</th><th style="text-align:right">Projects</th><th style="text-align:right">% of total</th><th style="text-align:right">Total Area (ha)</th><th style="text-align:right">% of area</th><th style="text-align:right">Est. Annual (tCO2e)</th><th style="text-align:right">% of total</th></tr></thead><tbody>`+
+    rows.map((r,i)=>`<tr>
+      <td><div class="band-chip"><div class="band-dot" style="background:${colors[i]}"></div><strong>${r.band}</strong></div></td>
+      <td style="color:var(--muted);font-size:12px">${rangeLabel[r.band]}</td>
+      <td>${r.count}</td>
+      <td>${Math.round(r.count/totCount*100)}%</td>
+      <td>${fmtFull(r.area)}</td>
+      <td>${Math.round(r.area/totArea*100)}%</td>
+      <td>${fmt(r.cred)}</td>
+      <td>${Math.round(r.cred/totCred*100)}%</td>
+    </tr>`).join('')+
+    `<tr><td><strong>Total</strong></td><td></td><td>${totCount}</td><td>100%</td><td>${fmtFull(totArea)}</td><td>100%</td><td>${fmt(totCred)}</td><td>100%</td></tr></tbody>`;
+
+  document.getElementById('thresh-note').innerHTML=
+    `Thresholds are <strong>data-driven</strong>: P33 and P66 of the project area distribution in the current filtered dataset. Filtering the dataset (e.g. Asia-only) will shift the thresholds to reflect that sub-market's distribution.`;
+}
+
+
+// ════════════════════════════════════════════
+// TABLE
+// ════════════════════════════════════════════
+function renderTable(projects){
+  const srch=searchVal.toLowerCase();
+  let rows=projects.filter(p=>!srch||p.name.toLowerCase().includes(srch)||p.country.toLowerCase().includes(srch));
+  rows=[...rows].sort((a,b)=>{
+    let av,bv;
+    if(sortCol==='size'){av=['Small','Medium','Large'].indexOf(sizeClass(a.area_ha));bv=['Small','Medium','Large'].indexOf(sizeClass(b.area_ha))}
+    else{av=a[sortCol]||'';bv=b[sortCol]||''}
+    return typeof av==='number'?(av-bv)*sortDir:String(av).localeCompare(String(bv))*sortDir;
+  });
+  const eKey=p=>p.ecosystem==='Salt Marsh'?'Salt':p.ecosystem==='Tidal Wetland'?'Tidal':p.ecosystem;
+  document.getElementById('proj-tbody').innerHTML=rows.map(p=>`
+    <tr class="${selectedProject&&p.id===selectedProject.id?'row-selected':''}">
+      <td style="font-weight:500">${p.name}</td>
+      <td>${p.country}</td>
+      <td style="color:var(--muted)">${p.region}</td>
+      <td><span class="eco-badge eco-${eKey(p)}">${p.ecosystem}</span></td>
+      <td style="text-align:right" class="num">${fmtFull(p.area_ha)}</td>
+      <td><span class="size-badge size-${sizeClass(p.area_ha)}">${sizeClass(p.area_ha)}</span></td>
+      <td style="color:var(--muted);font-size:11px">${p.activities||'—'}</td>
+      <td style="text-align:center">${p.wrc_pct!=null?`<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div style="display:flex;width:52px;height:5px;border-radius:3px;overflow:hidden;border:1px solid rgba(255,255,255,.08)"><div style="width:${100-p.wrc_pct}%;background:#00d4aa" title="ARR biomass ${100-p.wrc_pct}%"></div><div style="width:${p.wrc_pct}%;background:#0ea5e9" title="WRC/SOC ${p.wrc_pct}%"></div></div><div style="font-size:9px;color:var(--muted);letter-spacing:.2px">${p.wrc_pct}% SOC</div></div>`:`<span class="nprt-na">—</span>`}</td>
+      <td style="text-align:right" class="num">${fmt(p.credits_issued)}</td>
+      <td style="text-align:right">${p.nprt_pct!=null?`<span class="nprt-pill ${p.nprt_pct<15?'nprt-flag':p.nprt_pct<20?'nprt-warn':'nprt-ok'}">${p.nprt_pct}%${p.nprt_pct<15?' ⚠':''}</span>`:`<span class="nprt-na">—</span>`}</td>
+      <td><span class="status-dot status-${p.status.split(' ')[0]}"></span>${p.status}</td>
+      <td style="color:var(--muted);font-size:11px">${p.method}</td>
+      <td style="text-align:right" class="num">${p.year}</td>
+    </tr>`).join('');
+  document.querySelectorAll('table.projects th').forEach(th=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.dataset.col===sortCol)th.classList.add(sortDir>0?'sort-asc':'sort-desc');
+  });
+}
+
+// ════════════════════════════════════════════
+// RENDER ALL
+// ════════════════════════════════════════════
+function renderAll(){
+  const p=getFiltered();
+  // If selected project is no longer in filtered set, clear selection
+  if(selectedProject&&!p.find(proj=>proj.id===selectedProject.id)){
+    selectedProject=null;
+    updateSelectedPanel(null);
+  }
+  const display=selectedProject?[selectedProject]:p;
+  updateStats(display,p.length);
+  initCharts(display);
+  renderMap(p);
+  renderBubbleChart(p);
+  renderTable(p);
+}
+
+// ════════════════════════════════════════════
+// EVENTS
+// ════════════════════════════════════════════
+['f-eco','f-region','f-status','f-size','f-method','f-activity','f-nprt'].forEach(id=>{
+  document.getElementById(id).addEventListener('change',renderAll);
+});
+document.getElementById('search').addEventListener('input',e=>{searchVal=e.target.value;renderTable(getFiltered())});
+document.querySelectorAll('table.projects th').forEach(th=>{
+  th.addEventListener('click',()=>{sortCol===th.dataset.col?sortDir*=-1:(sortCol=th.dataset.col,sortDir=-1);renderTable(getFiltered())});
+});
+document.getElementById('colour-tog').addEventListener('click',e=>{
+  const btn=e.target.closest('.tog-btn');if(!btn)return;
+  colourMode=btn.dataset.v;
+  document.querySelectorAll('#colour-tog .tog-btn').forEach(b=>b.classList.remove('active','active-risk'));
+  btn.classList.add(colourMode==='risk'?'active-risk':'active');
+  renderMap(getFiltered());
+});
+document.getElementById('size-tog').addEventListener('click',e=>{
+  const btn=e.target.closest('.tog-btn');if(!btn)return;
+  sizeMode=btn.dataset.v;
+  document.querySelectorAll('#size-tog .tog-btn').forEach(b=>b.classList.remove('active','active-area'));
+  btn.classList.add(sizeMode==='area'?'active-area':'active');
+  renderMap(getFiltered());
+});
+document.querySelectorAll('.viz-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.viz-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.viz-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.panel).classList.add('active');
+    if(tab.dataset.panel==='bubble-panel') renderBubbleChart(getFiltered());
+  });
+});
+
+// ESC to clear selection
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&selectedProject)deselectProject();});
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+initMapCanvas();
+renderAll();
+</script>
+</body>
+</html>
