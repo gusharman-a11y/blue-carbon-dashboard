@@ -162,7 +162,7 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
     <div class="brand-dot"></div>
     <div>
       <h1>Blue Carbon <span style="font-weight:400;color:var(--muted)">/  Global Registry</span></h1>
-      <div style="font-size:11px;color:var(--muted);margin-top:1px">Verra VCS · 66 projects · 48 VM0033 (real) + 18 illustrative · v2026-05</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:1px">Verra VCS · 48 projects · all VM0033 · v2026-05</div>
     </div>
   </div>
   <div class="header-right">
@@ -209,7 +209,7 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
   <label>Method</label>
   <select id="f-method">
     <option value="">All methods</option>
-    <option>VM0033</option><option>VM0071</option><option>VM0024</option>
+    <option>VM0033</option>
   </select>
   <label>Activity</label>
   <select id="f-activity">
@@ -342,7 +342,7 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
     <div style="color:#3a5a7a">Verra covers ~87% of blue carbon VCUs by volume. Size thresholds: data-driven P33/P66 of project area distribution in the current filtered view.</div>
   </div>
   <div class="footer-row" style="margin-top:2px">
-    <div style="color:#3a5a7a">⚠ Country risk: indicative composite score (political stability · governance · regulatory quality) proxied from World Bank WGI and Freedom House data. <strong style="color:#4a6a8a">Not externally validated</strong> — screening indicator only. · VM0071 (seagrass) and VM0024 (tidal/salt marsh) project records are <strong style="color:#4a6a8a">illustrative stand-ins</strong> pending Verra registry pull; treat as directional only.</div>
+    <div style="color:#3a5a7a">⚠ Country risk: indicative composite score (political stability · governance · regulatory quality) proxied from World Bank WGI and Freedom House data. <strong style="color:#4a6a8a">Not externally validated</strong> — screening indicator only. · VM0024 (Coastal Wetland Creation) was inactivated by Verra in Sept 2023 with zero registered projects. VM0071 is not a Verra methodology. All 48 projects shown use VM0033 only.</div>
   </div>
 </footer>
 
@@ -356,7 +356,7 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
 //   Remaining % = ARR (biomass). Null = not explicitly broken down in PD (most projects only publish aggregate totals).
 // area_ha + lat/lng: Verra resourceSummary API (project 5418 converted from acres)
 // credits_issued: Verra-registered est. annual emission reductions (tCO2e/yr) from allprojects.csv
-// VM0071 / VM0024 projects: illustrative
+// VM0024 inactivated Sept 2023 (zero registered projects). VM0071 is not a Verra methodology. Both removed.
 const PROJECTS = [
   // ── VM0033 · Africa ──────────────────────────────────────────────────────────
   {id:'VCS5922',name:'Lamantin',country:'Guinea',region:'Africa',lat:10.857388,lng:-14.662888,ecosystem:'Mangrove',area_ha:73751,credits_issued:80000,activities:'REDD; WRC',status:'Under Development',method:'VM0033',year:2026,nprt_pct:null},
@@ -411,26 +411,6 @@ const PROJECTS = [
   {id:'VCS2360',name:'Virginia Coast Reserve Seagrass',country:'USA',region:'Americas',lat:37.312711,lng:-75.839815,ecosystem:'Seagrass',area_ha:66452,credits_issued:1349,activities:'WRC',status:'Under Development',method:'VM0033',year:2015,nprt_pct:null},
   // ── VM0033 · Europe ─────────────────────────────────────────────────────────
   {id:'VCS3967',name:'Venice Lagoon',country:'Italy',region:'Europe',lat:45.56826,lng:12.503602,ecosystem:'Tidal Wetland',area_ha:1734,credits_issued:150531,activities:'ARR',status:'Under Validation',method:'VM0033',year:2022,nprt_pct:null},
-  // ── VM0071 · Seagrass (illustrative) ────────────────────────────────────────
-  {id:'VCS2388',name:'Gazi Bay Seagrass',country:'Kenya',region:'Africa',lat:-4.38,lng:39.51,ecosystem:'Seagrass',area_ha:340,credits_issued:28000,status:'Registered',method:'VM0071',year:2021},
-  {id:'VCS2435',name:'Mozambique Channel Seagrass',country:'Tanzania',region:'Africa',lat:-10.5,lng:40.8,ecosystem:'Seagrass',area_ha:5500,credits_issued:210000,status:'Validated',method:'VM0071',year:2023},
-  {id:'VCS2440',name:'Tunisia Coastal Posidonia',country:'Tunisia',region:'Africa',lat:37.0,lng:10.5,ecosystem:'Seagrass',area_ha:1600,credits_issued:55000,status:'Under Validation',method:'VM0071',year:2024},
-  {id:'VCS2195',name:'Guajira Peninsula Seagrass',country:'Colombia',region:'Americas',lat:11.8,lng:-72.5,ecosystem:'Seagrass',area_ha:4800,credits_issued:195000,status:'Registered',method:'VM0071',year:2018},
-  {id:'VCS2365',name:'Phang Nga Bay Seagrass',country:'Thailand',region:'Asia',lat:8.5,lng:98.5,ecosystem:'Seagrass',area_ha:3200,credits_issued:145000,status:'Validated',method:'VM0071',year:2022},
-  {id:'VCS2170',name:'Marovo Lagoon Seagrass',country:'Solomon Islands',region:'Pacific',lat:-8.6,lng:158.0,ecosystem:'Seagrass',area_ha:15000,credits_issued:580000,status:'Registered',method:'VM0071',year:2018},
-  {id:'VCS2345',name:'Rock Islands Seagrass',country:'Palau',region:'Pacific',lat:7.2,lng:134.5,ecosystem:'Seagrass',area_ha:1800,credits_issued:68000,status:'Registered',method:'VM0071',year:2021},
-  {id:'VCS2355',name:'Kaipara Harbour Seagrass',country:'New Zealand',region:'Oceania',lat:-36.4,lng:174.2,ecosystem:'Seagrass',area_ha:1200,credits_issued:45000,status:'Validated',method:'VM0071',year:2021},
-  {id:'VCS2425',name:'Mediterranean Seagrass',country:'Spain',region:'Europe',lat:39.6,lng:2.9,ecosystem:'Seagrass',area_ha:2500,credits_issued:88000,status:'Under Validation',method:'VM0071',year:2023},
-  // ── VM0024 · Tidal wetland / salt marsh (illustrative) ───────────────────────
-  {id:'VCS2295',name:'Volta Delta Wetlands',country:'Ghana',region:'Africa',lat:5.8,lng:0.9,ecosystem:'Tidal Wetland',area_ha:2200,credits_issued:210000,status:'Registered',method:'VM0024',year:2020},
-  {id:'VCS2445',name:'West Africa Salt Marsh',country:'Mauritania',region:'Africa',lat:18.2,lng:-16.1,ecosystem:'Salt Marsh',area_ha:3800,credits_issued:285000,status:'Under Validation',method:'VM0024',year:2024},
-  {id:'VCS2375',name:'Mindanao Coastal Wetlands',country:'Philippines',region:'Asia',lat:7.2,lng:125.8,ecosystem:'Tidal Wetland',area_ha:5500,credits_issued:490000,status:'Validated',method:'VM0024',year:2022},
-  {id:'VCS2225',name:'Tela Bay Wetlands',country:'Honduras',region:'Americas',lat:15.8,lng:-87.5,ecosystem:'Tidal Wetland',area_ha:4500,credits_issued:395000,status:'Registered',method:'VM0024',year:2019},
-  {id:'VCS2010',name:'Louisiana Coastal Wetlands',country:'USA',region:'Americas',lat:29.5,lng:-90.2,ecosystem:'Salt Marsh',area_ha:182000,credits_issued:18500000,status:'Registered',method:'VM0024',year:2012},
-  {id:'VCS2385',name:'Chesapeake Bay Salt Marsh',country:'USA',region:'Americas',lat:38.8,lng:-76.3,ecosystem:'Salt Marsh',area_ha:8500,credits_issued:620000,status:'Validated',method:'VM0024',year:2022},
-  {id:'VCS2265',name:'Nariva Swamp',country:'Trinidad & Tobago',region:'Americas',lat:10.4,lng:-61.0,ecosystem:'Tidal Wetland',area_ha:6200,credits_issued:555000,status:'Registered',method:'VM0024',year:2019},
-  {id:'VCS2395',name:'Kakadu Coastal Wetlands',country:'Australia',region:'Oceania',lat:-12.9,lng:132.4,ecosystem:'Tidal Wetland',area_ha:14000,credits_issued:1150000,status:'Registered',method:'VM0024',year:2022},
-  {id:'VCS2430',name:'Samoa Coastal Wetlands',country:'Samoa',region:'Pacific',lat:-13.7,lng:-172.1,ecosystem:'Tidal Wetland',area_ha:1200,credits_issued:95000,status:'Under Validation',method:'VM0024',year:2023},
 ];
 
 
