@@ -892,10 +892,7 @@ function getFiltered(){
   const sec=document.getElementById('f-sector').value;
   const act=document.getElementById('f-activity').value;
   const nprt=document.getElementById('f-nprt').value;
-  // Compute thresholds from the non-size-filtered set so bands reflect the active ecosystem/region/method context
   const base=PROJECTS.filter(p=>(!eco||p.ecosystem===eco)&&(!reg||p.region===reg)&&(!mth||p.method===mth)&&(!sec||p.sector===sec)&&(!sta||p.status===sta)&&matchActivity(p,act)&&(!nprt||(nprt==='flagged'?p.nprt_pct!=null&&p.nprt_pct<15:p.nprt_pct!=null)));
-  const withArea=base.filter(p=>p.area_ha!=null);
-  if(withArea.length>=3) THRESH=computeThresholds(withArea);
   return sz?base.filter(p=>p.area_ha!=null&&sizeClass(p.area_ha)===sz):base;
 }
 
@@ -1413,7 +1410,7 @@ function renderSizeTable(projects){
 
   const rangeLabel={'Small':`< ${fmtFull(THRESH.p33)} ha`,'Medium':`${fmtFull(THRESH.p33)} – ${fmtFull(THRESH.p66)} ha`,'Large':`> ${fmtFull(THRESH.p66)} ha`};
 
-  document.getElementById('size-sub').textContent=`Thresholds: P33 = ${fmtFull(THRESH.p33)} ha · P66 = ${fmtFull(THRESH.p66)} ha · ${withArea.length} projects with known area`;
+  document.getElementById('size-sub').textContent=`Global benchmarks: P33 = ${fmtFull(THRESH.p33)} ha · P66 = ${fmtFull(THRESH.p66)} ha · ${withArea.length} of ${PROJECTS.filter(p=>p.area_ha!=null).length} area projects shown`;
 
   document.getElementById('size-table').innerHTML=
     `<thead><tr><th>Band</th><th>Range</th><th style="text-align:right">Projects</th><th style="text-align:right">% of total</th><th style="text-align:right">Total Area (ha)</th><th style="text-align:right">% of area</th><th style="text-align:right">Est. Annual (tCO2e)</th><th style="text-align:right">% of total</th></tr></thead><tbody>`+
@@ -1430,7 +1427,7 @@ function renderSizeTable(projects){
     `<tr><td><strong>Total</strong></td><td></td><td>${totCount}</td><td>100%</td><td>${fmtFull(totArea)}</td><td>100%</td><td>${fmt(totCred)}</td><td>100%</td></tr></tbody>`;
 
   document.getElementById('thresh-note').innerHTML=
-    `Thresholds are <strong>data-driven</strong>: P33 and P66 of the project area distribution in the current filtered dataset. Filtering the dataset (e.g. Asia-only) will shift the thresholds to reflect that sub-market's distribution.`;
+    `Thresholds are <strong>fixed</strong> at global P33 / P66 across all ${PROJECTS.filter(p=>p.area_ha!=null).length} projects with known area. Applying filters changes the <em>counts</em> within each band — letting you see how a region or methodology skews small or large relative to the global benchmark.`;
 }
 
 
