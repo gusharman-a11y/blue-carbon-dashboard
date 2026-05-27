@@ -194,18 +194,20 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
   <label>Region</label>
   <select id="f-region">
     <option value="">All regions</option>
-    <option>Africa</option><option>Asia</option><option>Americas</option><option>Latin America</option>
-    <option>North America</option><option>Pacific</option><option>Oceania</option><option>Middle East</option><option>Europe</option>
+    <option>Africa</option><option>Asia</option><option>Latin America</option><option>North America</option>
+    <option>Europe</option><option>Oceania</option><option>Middle East</option><option>Pacific</option>
   </select>
   <label>Status</label>
   <select id="f-status">
     <option value="">All statuses</option>
     <option>Registered</option>
-    <option>Verification Requested</option>
-    <option>Registration Requested</option>
-    <option>Validated</option>
     <option>Under Validation</option>
     <option>Under Development</option>
+    <option>Registration Requested</option>
+    <option>Verification Requested</option>
+    <option>Verification Approval Requested</option>
+    <option>On Hold</option>
+    <option>Inactive</option>
   </select>
   <label>Size</label>
   <select id="f-size">
@@ -304,7 +306,7 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
   </div>
   <div>
     <div class="chart-title">Est. Annual Reductions by Region</div>
-    <div class="chart-sub" id="region-sub">tCO2e/yr (Verra-registered) — Asia dominates at ~60% of global total</div>
+    <div class="chart-sub" id="region-sub">tCO2e/yr (Verra-registered) — all 5 methodologies</div>
     <div class="chart-wrap"><canvas id="chart-region"></canvas></div>
   </div>
 </div>
@@ -325,7 +327,7 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
     <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)">
       <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:2px;background:#00d4aa"></div>ARR biomass</div>
       <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:2px;background:#0ea5e9"></div>WRC / SOC</div>
-      <span style="color:#3a5a7a">· SOC split confirmed from PD (6 of 22 ARR+WRC projects)</span>
+      <span style="color:#3a5a7a">· SOC split from VM0033 project descriptions where published · Size bands based on projects with known area (VM0033 only)</span>
     </div>
     <div class="search-wrap"><span class="search-icon">⌕</span><input type="text" id="search" placeholder="Search name, country…"></div>
   </div>
@@ -689,7 +691,7 @@ PROJECTS.forEach(p=>{if(!p.sector){p.sector='Blue Carbon';}});
 const ECO_COLORS={'Mangrove':'#00d4aa','Seagrass':'#0ea5e9','Salt Marsh':'#a78bfa','Tidal Wetland':'#34d399','Grassland':'#f59e0b','Cropland':'#a3e635','Livestock':'#f97316','Rice':'#e879f9'};
 const ECO_BG={'Mangrove':'rgba(0,212,170,.18)','Seagrass':'rgba(14,165,233,.18)','Salt Marsh':'rgba(167,139,250,.18)','Tidal Wetland':'rgba(52,211,153,.18)','Grassland':'rgba(245,158,11,.18)','Cropland':'rgba(163,230,53,.18)','Livestock':'rgba(249,115,22,.18)','Rice':'rgba(232,121,249,.18)'};
 const ECOSYSTEMS=['Mangrove','Seagrass','Salt Marsh','Tidal Wetland','Grassland','Cropland','Livestock','Rice'];
-const REGIONS=['Africa','Asia','Americas','Latin America','North America','Pacific','Oceania','Middle East','Europe'];
+const REGIONS=['Africa','Asia','Latin America','North America','Europe','Oceania','Middle East','Pacific'];
 
 const COUNTRY_CENTROIDS={
   'Argentina':[-38.4161,-63.6167],'Australia':[-25.2744,133.7751],'Austria':[47.5162,14.5501],
@@ -1211,9 +1213,15 @@ function initCharts(projects){
   document.getElementById('status-sub').textContent=isSingle
     ?`Status: ${sp.status}`
     :'by count';
-  document.getElementById('region-sub').textContent=isSingle
-    ?`${sp.region} · ${sp.country}`
-    :'tCO2e/yr (Verra-registered) — Asia dominates at ~60% of global total';
+  if(isSingle){
+    document.getElementById('region-sub').textContent=`${sp.region} · ${sp.country}`;
+  } else {
+    const _rd={};REGIONS.forEach(r=>_rd[r]=0);projects.forEach(p=>{if(_rd[p.region]!=null)_rd[p.region]+=p.credits_issued;});
+    const _top=REGIONS.slice().sort((a,b)=>_rd[b]-_rd[a])[0];
+    const _tot=projects.reduce((s,p)=>s+p.credits_issued,0);
+    const _pct=_tot?Math.round(_rd[_top]/_tot*100):0;
+    document.getElementById('region-sub').textContent=`tCO₂e/yr (Verra-registered) · ${_top} leads at ~${_pct}% · all 5 methodologies`;
+  }
 
   // ── Ecosystem donut by CREDITS ──
   const ecoCredits={};ECOSYSTEMS.forEach(e=>ecoCredits[e]=0);
@@ -1233,8 +1241,8 @@ function initCharts(projects){
     </div>`).join('');
 
   // ── Status donut ──
-  const statuses=['Registered','Verification Requested','Registration Requested','Validated','Under Validation','Under Development'];
-  const statColors=['#00d4aa','#34d399','#0ea5e9','#60a5fa','#f59e0b','#64748b'];
+  const statuses=['Registered','Under Validation','Under Development','Registration Requested','Verification Requested','Verification Approval Requested','On Hold','Inactive'];
+  const statColors=['#00d4aa','#f59e0b','#64748b','#0ea5e9','#34d399','#60a5fa','#a78bfa','#94a3b8'];
   const statCts=statuses.map(s=>projects.filter(p=>p.status===s).length);
   const statT=statCts.reduce((a,b)=>a+b,0);
   if(chartStatus) chartStatus.destroy();
