@@ -13,6 +13,7 @@
   --text:#e2eeff;--muted:#7a9abf;
   --teal:#00d4aa;--blue:#0ea5e9;--purple:#a78bfa;--green:#34d399;
   --amber:#f59e0b;--red:#f87171;--orange:#f97316;
+  --lime:#a3e635;--fuchsia:#e879f9;
 }
 body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5}
 
@@ -127,6 +128,10 @@ table.projects tr:hover td{background:rgba(255,255,255,.02)}
 .eco-Seagrass{background:rgba(14,165,233,.15);color:var(--blue)}
 .eco-Salt{background:rgba(167,139,250,.15);color:var(--purple)}
 .eco-Tidal{background:rgba(52,211,153,.15);color:var(--green)}
+.eco-Grassland{background:rgba(245,158,11,.15);color:#f59e0b}
+.eco-Cropland{background:rgba(163,230,53,.15);color:#a3e635}
+.eco-Livestock{background:rgba(249,115,22,.15);color:#f97316}
+.eco-Rice{background:rgba(232,121,249,.15);color:#e879f9}
 .size-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600}
 .size-Small{background:rgba(96,165,250,.15);color:#60a5fa}
 .size-Medium{background:rgba(245,158,11,.15);color:var(--amber)}
@@ -162,7 +167,7 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
     <div class="brand-dot"></div>
     <div>
       <h1>Blue Carbon <span style="font-weight:400;color:var(--muted)">/  Global Registry</span></h1>
-      <div style="font-size:11px;color:var(--muted);margin-top:1px">Verra VCS · 48 projects · all VM0033 · v2026-05</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:1px">Verra VCS · 288 projects · VM0033/0042/0032/0041/0051 · v2026-05</div>
     </div>
   </div>
   <div class="header-right">
@@ -176,7 +181,7 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
   <div class="stat-card"><div class="stat-label" id="sl-area">Total Area</div><div class="stat-value v-blue" id="s-area">—</div><div class="stat-sub" id="s-area-sub">hectares</div></div>
   <div class="stat-card"><div class="stat-label" id="sl-credits">Est. Annual (tCO2e)</div><div class="stat-value v-purple" id="s-credits">—</div><div class="stat-sub" id="s-credits-sub">sum of Verra-registered annual reductions</div></div>
   <div class="stat-card"><div class="stat-label" id="sl-largest">Largest Project</div><div class="stat-value v-amber" id="s-largest">—</div><div class="stat-sub" id="s-largest-name">by est. annual reductions</div></div>
-  <div class="stat-card"><div class="stat-label">Buffer &lt;15% ⚠</div><div class="stat-value v-red" id="s-flagged" style="color:var(--red)">—</div><div class="stat-sub" id="s-flagged-sub">of VM0033 projects checked</div></div>
+  <div class="stat-card"><div class="stat-label">Buffer &lt;15% ⚠</div><div class="stat-value v-red" id="s-flagged" style="color:var(--red)">—</div><div class="stat-sub" id="s-flagged-sub">projects with NPRT data</div></div>
 </div>
 
 <div class="controls">
@@ -184,12 +189,13 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
   <select id="f-eco">
     <option value="">All ecosystems</option>
     <option>Mangrove</option><option>Seagrass</option><option>Salt Marsh</option><option>Tidal Wetland</option>
+    <option>Grassland</option><option>Cropland</option><option>Livestock</option><option>Rice</option>
   </select>
   <label>Region</label>
   <select id="f-region">
     <option value="">All regions</option>
-    <option>Africa</option><option>Asia</option><option>Americas</option>
-    <option>Pacific</option><option>Oceania</option><option>Middle East</option><option>Europe</option>
+    <option>Africa</option><option>Asia</option><option>Americas</option><option>Latin America</option>
+    <option>North America</option><option>Pacific</option><option>Oceania</option><option>Middle East</option><option>Europe</option>
   </select>
   <label>Status</label>
   <select id="f-status">
@@ -210,6 +216,18 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
   <select id="f-method">
     <option value="">All methods</option>
     <option>VM0033</option>
+    <option>VM0042</option>
+    <option>VM0032</option>
+    <option>VM0041</option>
+    <option>VM0051</option>
+  </select>
+  <label>Sector</label>
+  <select id="f-sector">
+    <option value="">All sectors</option>
+    <option>Blue Carbon</option>
+    <option>Agricultural Land Mgmt</option>
+    <option>Livestock</option>
+    <option>Rice</option>
   </select>
   <label>Activity</label>
   <select id="f-activity">
@@ -342,7 +360,7 @@ footer{padding:14px 28px;border-top:1px solid var(--border);font-size:11px;color
     <div style="color:#3a5a7a">Verra covers ~87% of blue carbon VCUs by volume. Size thresholds: data-driven P33/P66 of project area distribution in the current filtered view.</div>
   </div>
   <div class="footer-row" style="margin-top:2px">
-    <div style="color:#3a5a7a">⚠ Country risk: indicative composite score (political stability · governance · regulatory quality) proxied from World Bank WGI and Freedom House data. <strong style="color:#4a6a8a">Not externally validated</strong> — screening indicator only. · VM0024 (Coastal Wetland Creation) was inactivated by Verra in Sept 2023 with zero registered projects. VM0071 is not a Verra methodology. All 48 projects shown use VM0033 only.</div>
+    <div style="color:#3a5a7a">⚠ Country risk: indicative composite score (political stability · governance · regulatory quality) proxied from World Bank WGI and Freedom House data. <strong style="color:#4a6a8a">Not externally validated</strong> — screening indicator only. · VM0024 (Coastal Wetland Creation) was inactivated by Verra in Sept 2023 with zero registered projects. · Methodologies: VM0033 (Blue Carbon coastal/tidal); VM0042 (Agricultural Land Mgmt — cropland &amp; grassland SOC); VM0032 (Sustainable Grassland/Rangeland Mgmt); VM0041 (Livestock enteric fermentation feed supplements); VM0051 (Rice AWD irrigation methane reduction). Area data (ha) not available from CSV exports for VM0042/0032/0041/0051 projects — size classification applies to VM0033 only.</div>
   </div>
 </footer>
 
@@ -410,17 +428,296 @@ const PROJECTS = [
   {id:'VCS5418',name:'Salvador WMA Baldcypress',country:'USA',region:'Americas',lat:29.792121,lng:-90.302172,ecosystem:'Tidal Wetland',area_ha:5985,credits_issued:61778,activities:'ARR; WRC',status:'Under Validation',method:'VM0033',year:2022,nprt_pct:13},
   {id:'VCS2360',name:'Virginia Coast Reserve Seagrass',country:'USA',region:'Americas',lat:37.312711,lng:-75.839815,ecosystem:'Seagrass',area_ha:66452,credits_issued:1349,activities:'WRC',status:'Under Development',method:'VM0033',year:2015,nprt_pct:null},
   // ── VM0033 · Europe ─────────────────────────────────────────────────────────
-  {id:'VCS3967',name:'Venice Lagoon',country:'Italy',region:'Europe',lat:45.56826,lng:12.503602,ecosystem:'Tidal Wetland',area_ha:1734,credits_issued:150531,activities:'ARR',status:'Under Validation',method:'VM0033',year:2022,nprt_pct:null},
+  {id:'VCS3967',name:'Venice Lagoon',country:'Italy',region:'Europe',lat:45.56826,lng:12.503602,ecosystem:'Tidal Wetland',area_ha:1734,credits_issued:150531,activities:'ARR',status:'Under Validation',method:'VM0033',year:2022,nprt_pct:null,sector:'Blue Carbon'},
+
+  // ── VM0032 · Sustainable Agricultural Land Management / Rangeland ────────────
+  {id:'VCS5703',name:'KwaZulu-Natal Sustainable Landscapes',country:'South Africa',region:'Africa',lat:-30.06+0.1,lng:22.94+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:730524,activities:'ALM',status:'Under Development',method:'VM0032',year:2023,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5689',name:'Karoo Sustainable Landscapes',country:'South Africa',region:'Africa',lat:-30.06-0.2,lng:22.94-0.3,ecosystem:'Grassland',area_ha:null,credits_issued:900000,activities:'ALM',status:'Under Development',method:'VM0032',year:2025,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5506',name:'uMkhanyakude Restoration Project',country:'South Africa',region:'Africa',lat:-30.06+0.3,lng:22.94+0.5,ecosystem:'Grassland',area_ha:null,credits_issued:273453,activities:'ALM',status:'Under Development',method:'VM0032',year:2022,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5486',name:'Green Mpumalanga Project',country:'South Africa',region:'Africa',lat:-30.06-0.4,lng:22.94+0.1,ecosystem:'Grassland',area_ha:null,credits_issued:72392,activities:'ALM',status:'Under Development',method:'VM0032',year:2026,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5330',name:'Western American Rangelands Regeneration',country:'United States',region:'North America',lat:37.09+0.4,lng:-95.71+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:415103,activities:'ALM',status:'Under Validation',method:'VM0032',year:2023,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5289',name:'Uruguay Grasslands Regeneration',country:'Uruguay',region:'Latin America',lat:-32.52,lng:-55.77,ecosystem:'Grassland',area_ha:null,credits_issued:290944,activities:'ALM',status:'Under Development',method:'VM0032',year:2024,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5128',name:'Kunene Highlands Elephant Landscape',country:'Namibia',region:'Africa',lat:-22.96,lng:18.49,ecosystem:'Grassland',area_ha:null,credits_issued:800506,activities:'ALM',status:'Under Development',method:'VM0032',year:2024,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5129',name:'Montana Sustainable Grazing',country:'United States',region:'North America',lat:37.09-0.3,lng:-95.71-0.4,ecosystem:'Grassland',area_ha:null,credits_issued:15019,activities:'ALM',status:'Under Development',method:'VM0032',year:2024,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5130',name:'Nature Generator 2 Coahuila Grazing',country:'Mexico',region:'North America',lat:23.63+0.2,lng:-102.55+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:66011,activities:'ALM',status:'Under Development',method:'VM0032',year:2022,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4994',name:'Entooma Sidai Maasai Mara Rangeland',country:'Kenya',region:'Africa',lat:-0.02+0.2,lng:37.91+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:689731,activities:'ALM',status:'Under Development',method:'VM0032',year:2024,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4924',name:'Longido and Monduli Rangelands',country:'Tanzania',region:'Africa',lat:-6.37+0.2,lng:34.89+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:1553000,activities:'ALM',status:'Under Validation',method:'VM0032',year:2024,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4915',name:'Mafisa Livestock Grazing Zambia',country:'Zambia',region:'Africa',lat:-13.13+0.2,lng:27.85+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:486656,activities:'ALM',status:'Under Validation',method:'VM0032',year:2024,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4714',name:'Kajiado Rangelands Kenya',country:'Kenya',region:'Africa',lat:-0.02-0.3,lng:37.91+0.5,ecosystem:'Grassland',area_ha:null,credits_issued:915139,activities:'ALM',status:'Under Validation',method:'VM0032',year:2023,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4670',name:'Limpopo-Lipadi Soil Carbon Botswana',country:'Botswana',region:'Africa',lat:-22.33,lng:24.68,ecosystem:'Grassland',area_ha:null,credits_issued:10000,activities:'ALM',status:'Under Development',method:'VM0032',year:2021,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4655',name:'Improved Grazing Mosaic Forest Argentina',country:'Argentina',region:'Latin America',lat:-38.42+0.2,lng:-63.62+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:9726,activities:'ALM',status:'Registration Requested',method:'VM0032',year:2021,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3397',name:'Kruger to Canyons Rangeland SA',country:'South Africa',region:'Africa',lat:-30.06+0.5,lng:22.94-0.2,ecosystem:'Grassland',area_ha:null,credits_issued:115281,activities:'ALM',status:'Verification Approval Requested',method:'VM0032',year:2018,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS1468',name:'Northern Kenya Grassland Carbon',country:'Kenya',region:'Africa',lat:-0.02+0.4,lng:37.91-0.3,ecosystem:'Grassland',area_ha:null,credits_issued:1797493,activities:'ALM',status:'On Hold',method:'VM0032',year:2013,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+
+  // ── VM0041 · Livestock Enteric Fermentation ──────────────────────────────────
+  {id:'VCS5988',name:'Rumin8 Beef Confinement USA',country:'United States',region:'North America',lat:37.09+0.1,lng:-95.71+0.1,ecosystem:'Livestock',area_ha:null,credits_issued:587000,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5733',name:'AgCoTech Cambodia Livestock',country:'Cambodia',region:'Asia',lat:12.57+0.1,lng:104.99+0.1,ecosystem:'Livestock',area_ha:null,credits_issued:121200,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5734',name:'AgCoTech Lesotho Livestock',country:'Lesotho',region:'Africa',lat:-29.61,lng:28.23,ecosystem:'Livestock',area_ha:null,credits_issued:101000,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5735',name:'AgCoTech Thailand Livestock',country:'Thailand',region:'Asia',lat:15.87+0.2,lng:100.99+0.2,ecosystem:'Livestock',area_ha:null,credits_issued:121200,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5727',name:'AgCoTech Kenya Livestock',country:'Kenya',region:'Africa',lat:-0.02-0.2,lng:37.91-0.4,ecosystem:'Livestock',area_ha:null,credits_issued:261857,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5681',name:'Ruminant Biotech Australia',country:'Australia',region:'Oceania',lat:-25.27+0.2,lng:133.78+0.2,ecosystem:'Livestock',area_ha:null,credits_issued:294902,activities:'',status:'Under Validation',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5629',name:'Maharashtra Methane Mission India',country:'India',region:'Asia',lat:20.59+0.3,lng:78.96+0.3,ecosystem:'Livestock',area_ha:null,credits_issued:10699429,activities:'',status:'Under Validation',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5623',name:'Metha.ai USA Feed Additive',country:'United States',region:'North America',lat:37.09-0.1,lng:-95.71-0.1,ecosystem:'Livestock',area_ha:null,credits_issued:561099,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5611',name:'AgCoTech Laos Livestock',country:'Lao PDR',region:'Asia',lat:19.86,lng:102.50,ecosystem:'Livestock',area_ha:null,credits_issued:208143,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5550',name:'Italian Veal Calves Enteric Italy',country:'Italy',region:'Europe',lat:41.87+0.2,lng:12.57+0.2,ecosystem:'Livestock',area_ha:null,credits_issued:33178,activities:'',status:'Registration Requested',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5465',name:'Enteric Fermentation Italy VETOS',country:'Italy',region:'Europe',lat:41.87-0.2,lng:12.57-0.2,ecosystem:'Livestock',area_ha:null,credits_issued:295068,activities:'',status:'Registration Requested',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5030',name:'Sea Forest Enteric Methane Australia',country:'Australia',region:'Oceania',lat:-25.27-0.2,lng:133.78-0.2,ecosystem:'Livestock',area_ha:null,credits_issued:1217128,activities:'',status:'Registered',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5022',name:'FrieslandCampina Netherlands Dairy',country:'Netherlands',region:'Europe',lat:52.13,lng:5.29,ecosystem:'Livestock',area_ha:null,credits_issued:631036,activities:'',status:'Registered',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS5024',name:'Agri Beef Steam-Flaked Corn USA',country:'United States',region:'North America',lat:37.09+0.3,lng:-95.71-0.2,ecosystem:'Livestock',area_ha:null,credits_issued:15358,activities:'',status:'Under Validation',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS4950',name:'Berglandmilch Austria Dairy',country:'Austria',region:'Europe',lat:47.52,lng:14.55,ecosystem:'Livestock',area_ha:null,credits_issued:24369,activities:'',status:'Registered',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS4947',name:'DIT AgTech Australia uDOSE',country:'Australia',region:'Oceania',lat:-25.27+0.3,lng:133.78+0.3,ecosystem:'Livestock',area_ha:null,credits_issued:280692,activities:'',status:'Registered',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS4880',name:'Feedworks Agolin Australia NZ',country:'Australia',region:'Oceania',lat:-25.27-0.3,lng:133.78+0.4,ecosystem:'Livestock',area_ha:null,credits_issued:43029,activities:'',status:'Under Validation',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS4871',name:'Carbon Scale LATAM Argentina',country:'Argentina',region:'Latin America',lat:-38.42-0.2,lng:-63.62-0.2,ecosystem:'Livestock',area_ha:null,credits_issued:8000,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS4849',name:'Renove ALM Brazil',country:'Brazil',region:'Latin America',lat:-14.24+0.2,lng:-51.93+0.2,ecosystem:'Livestock',area_ha:null,credits_issued:130205,activities:'',status:'Under Validation',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS4560',name:'Ajinomoto Japan Dairy',country:'Japan',region:'Asia',lat:36.20,lng:138.25,ecosystem:'Livestock',area_ha:null,credits_issued:33074,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS3925',name:'SeaGraze USA Symbrosia',country:'United States',region:'North America',lat:37.09-0.2,lng:-95.71+0.2,ecosystem:'Livestock',area_ha:null,credits_issued:330026,activities:'',status:'Under Validation',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS3891',name:'Enteric Fermentation Uruguay',country:'Uruguay',region:'Latin America',lat:-32.52+0.2,lng:-55.77+0.2,ecosystem:'Livestock',area_ha:null,credits_issued:23653,activities:'',status:'Registered',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS3003',name:'Barry Callebaut USA Feed',country:'United States',region:'North America',lat:37.09+0.2,lng:-95.71-0.3,ecosystem:'Livestock',area_ha:null,credits_issued:232480,activities:'',status:'Registration Requested',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS2997',name:'Blue Ocean Barns USA',country:'United States',region:'North America',lat:37.09-0.3,lng:-95.71+0.3,ecosystem:'Livestock',area_ha:null,credits_issued:835,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS2761',name:'Mootral US Beef CowCredit USA',country:'United States',region:'North America',lat:37.09+0.4,lng:-95.71-0.4,ecosystem:'Livestock',area_ha:null,credits_issued:300250,activities:'',status:'Under Development',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS2751',name:'Mooh Cooperative Switzerland',country:'Switzerland',region:'Europe',lat:46.82,lng:8.23,ecosystem:'Livestock',area_ha:null,credits_issued:31640,activities:'',status:'Registered',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+  {id:'VCS2072',name:'UK CowCredit MOOTRAL',country:'United Kingdom',region:'Europe',lat:55.38,lng:-3.44,ecosystem:'Livestock',area_ha:null,credits_issued:187563,activities:'',status:'Registered',method:'VM0041',year:null,nprt_pct:null,sector:'Livestock'},
+
+  // ── VM0051 · Rice AWD Irrigation ─────────────────────────────────────────────
+  {id:'VCS5956',name:'AgriCapture Southeast Asia Rice Indonesia',country:'Indonesia',region:'Asia',lat:-0.79+0.3,lng:113.92+0.3,ecosystem:'Rice',area_ha:null,credits_issued:53142,activities:'ALM',status:'Under Development',method:'VM0051',year:2026,nprt_pct:null,sector:'Rice'},
+  {id:'VCS5890',name:'AgriCapture South Asia Rice India',country:'India',region:'Asia',lat:20.59-0.3,lng:78.96-0.3,ecosystem:'Rice',area_ha:null,credits_issued:566547,activities:'ALM',status:'Under Development',method:'VM0051',year:2026,nprt_pct:null,sector:'Rice'},
+  {id:'VCS5859',name:'AgriCapture Latin America Rice Brazil',country:'Brazil',region:'Latin America',lat:-14.24-0.2,lng:-51.93-0.2,ecosystem:'Rice',area_ha:null,credits_issued:46461,activities:'ALM',status:'Under Validation',method:'VM0051',year:2025,nprt_pct:null,sector:'Rice'},
+  {id:'VCS5814',name:'Thailand Carbon Rice AWD',country:'Thailand',region:'Asia',lat:15.87-0.2,lng:100.99-0.2,ecosystem:'Rice',area_ha:null,credits_issued:54645,activities:'ALM',status:'Under Validation',method:'VM0051',year:2025,nprt_pct:null,sector:'Rice'},
+  {id:'VCS5786',name:'Myanmar Carbon Rice AWD',country:'Myanmar',region:'Asia',lat:21.92+0.2,lng:95.96+0.2,ecosystem:'Rice',area_ha:null,credits_issued:59738,activities:'ALM',status:'Under Validation',method:'VM0051',year:2025,nprt_pct:null,sector:'Rice'},
+  {id:'VCS5469',name:'Vietnam AWD An Giang',country:'Viet Nam',region:'Asia',lat:14.06+0.2,lng:108.28+0.2,ecosystem:'Rice',area_ha:null,credits_issued:590682,activities:'ALM',status:'Under Validation',method:'VM0051',year:2025,nprt_pct:null,sector:'Rice'},
+  {id:'VCS3243',name:'Core Carbon Rice India',country:'India',region:'Asia',lat:20.59+0.4,lng:78.96+0.4,ecosystem:'Rice',area_ha:null,credits_issued:1375,activities:'ALM',status:'Verification Approval Requested',method:'VM0051',year:2022,nprt_pct:null,sector:'Rice'},
+
+  // ── VM0042 · Agricultural Land Management ────────────────────────────────────
+  {id:'VCS5985',name:'Topraq Carbon Kazakhstan',country:'Kazakhstan',region:'Asia',lat:48.02+0.3,lng:66.92+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:38000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5976',name:'Venture Carbon Brazil',country:'Brazil',region:'Latin America',lat:-14.24+0.3,lng:-51.93+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:696686,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5970',name:'Respira Patagonia Chile',country:'Chile',region:'Latin America',lat:-35.68,lng:-71.54,ecosystem:'Cropland',area_ha:null,credits_issued:867709,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5957',name:'Kenya Highlands Grouped',country:'Kenya',region:'Africa',lat:-0.02+0.3,lng:37.91+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:191805,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5932',name:'Thailand CP Carbon NE',country:'Thailand',region:'Asia',lat:15.87+0.3,lng:100.99+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:176000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5929',name:'Agricentric Carbon Kenya',country:'Kenya',region:'Africa',lat:-0.02+0.4,lng:37.91-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:75000,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5907',name:'Future Ecology Kazakhstan 1',country:'Kazakhstan',region:'Asia',lat:48.02-0.2,lng:66.92-0.2,ecosystem:'Grassland',area_ha:null,credits_issued:249597,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5904',name:'Future Ecology Kazakhstan 2',country:'Kazakhstan',region:'Asia',lat:48.02+0.2,lng:66.92+0.5,ecosystem:'Grassland',area_ha:null,credits_issued:570592,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5846',name:'Beetle Regen India Maharashtra',country:'India',region:'Asia',lat:20.59-0.4,lng:78.96-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:28504,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5807',name:'RACO Malaysia Grouped',country:'Malaysia',region:'Asia',lat:4.21,lng:101.98,ecosystem:'Cropland',area_ha:null,credits_issued:13387,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5803',name:'ALM Sierra Leone Teralytic',country:'Sierra Leone',region:'Africa',lat:8.46+0.2,lng:-11.78+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:45000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5774',name:'ReTerra Brazil',country:'Brazil',region:'Latin America',lat:-14.24-0.3,lng:-51.93+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:717000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5769',name:'Shandong Province ALM China',country:'China',region:'Asia',lat:35.86+0.4,lng:104.20+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:52708,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5766',name:'Agrokoncernas Lithuania',country:'Lithuania',region:'Europe',lat:55.17,lng:23.88,ecosystem:'Cropland',area_ha:null,credits_issued:209333,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5746',name:'Dornod Grassland Mongolia',country:'Mongolia',region:'Asia',lat:46.86+0.3,lng:103.85+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:800000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5747',name:'Selenge Grassland Mongolia',country:'Mongolia',region:'Asia',lat:46.86-0.2,lng:103.85-0.2,ecosystem:'Grassland',area_ha:null,credits_issued:180000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5748',name:'Sukhbaatar Grassland Mongolia',country:'Mongolia',region:'Asia',lat:46.86+0.4,lng:103.85-0.3,ecosystem:'Grassland',area_ha:null,credits_issued:800000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5739',name:'Tumed Left Banner China',country:'China',region:'Asia',lat:35.86-0.3,lng:104.20-0.3,ecosystem:'Grassland',area_ha:null,credits_issued:76540,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5725',name:'Ghana Wa West ALM',country:'Ghana',region:'Africa',lat:7.95+0.2,lng:-1.02+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:385080,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5724',name:'IndHemp Montana USA',country:'United States',region:'North America',lat:37.09-0.4,lng:-95.71+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:47545,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5710',name:'Soil Center Carbon Initiative USA',country:'United States',region:'North America',lat:37.09+0.5,lng:-95.71-0.5,ecosystem:'Cropland',area_ha:null,credits_issued:2438383,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5705',name:'Nadowli-Kaleo Ghana',country:'Ghana',region:'Africa',lat:7.95-0.2,lng:-1.02-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:211923,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5701',name:'Sustainable Regen Agri Kazakhstan',country:'Kazakhstan',region:'Asia',lat:48.02-0.3,lng:66.92+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:1727889,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5700',name:'EcoHarvest Kazakhstan',country:'Kazakhstan',region:'Asia',lat:48.02+0.4,lng:66.92-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:881748,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5680',name:'CO2ROZO Colombia',country:'Colombia',region:'Latin America',lat:4.57+0.2,lng:-74.30+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:336242,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5663',name:'Lam Son Sugarcane Vietnam',country:'Viet Nam',region:'Asia',lat:14.06-0.2,lng:108.28-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:1135,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5662',name:'Brazilian Citrus Program',country:'Brazil',region:'Latin America',lat:-14.24+0.4,lng:-51.93-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:93260,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5651',name:'Carbon Smart Farming SA',country:'South Africa',region:'Africa',lat:-30.56+0.3,lng:22.94+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:171510,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5638',name:'Henan Wancheng China',country:'China',region:'Asia',lat:35.86+0.3,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:155063,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5639',name:'Sukhbaatar Grassland 2 Mongolia',country:'Mongolia',region:'Asia',lat:46.86-0.3,lng:103.85+0.4,ecosystem:'Grassland',area_ha:null,credits_issued:162000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5640',name:'Tov Province Grassland Mongolia',country:'Mongolia',region:'Asia',lat:46.86+0.5,lng:103.85+0.5,ecosystem:'Grassland',area_ha:null,credits_issued:200000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5618',name:'TOURBA Brazil',country:'Brazil',region:'Latin America',lat:-14.24-0.4,lng:-51.93+0.5,ecosystem:'Cropland',area_ha:null,credits_issued:2625935,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5610',name:'AgriCarbon Orchards Israel',country:'Israel',region:'Middle East',lat:31.05+0.1,lng:34.85+0.1,ecosystem:'Cropland',area_ha:null,credits_issued:9000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5607',name:'Humus Program France',country:'France',region:'Europe',lat:46.23,lng:2.21,ecosystem:'Cropland',area_ha:null,credits_issued:733000,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5595',name:'ALM Grouped India Asvata',country:'India',region:'Asia',lat:20.59+0.4,lng:78.96-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:65047,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5590',name:'NaturAll Brazil IV',country:'Brazil',region:'Latin America',lat:-14.24+0.5,lng:-51.93-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:1562585,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5591',name:'NaturAll Brazil V',country:'Brazil',region:'Latin America',lat:-14.24-0.5,lng:-51.93-0.5,ecosystem:'Cropland',area_ha:null,credits_issued:1562585,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5568',name:'TOURBA Nigeria',country:'Nigeria',region:'Africa',lat:9.08+0.2,lng:8.68+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:651199,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5566',name:'Boomitra Grassland Costa Rica',country:'Costa Rica',region:'Latin America',lat:9.75,lng:-83.75,ecosystem:'Grassland',area_ha:null,credits_issued:169950,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5567',name:'Regenerative Agriculture Poland',country:'Poland',region:'Europe',lat:51.92+0.2,lng:19.15+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:533032,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5535',name:'Ralico Farm Argentina',country:'Argentina',region:'Latin America',lat:-38.42+0.3,lng:-63.62+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:9400,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5526',name:'Dornod Province Grassland Mongolia',country:'Mongolia',region:'Asia',lat:46.86-0.4,lng:103.85-0.4,ecosystem:'Grassland',area_ha:null,credits_issued:108000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5514',name:'Arkhangai Grassland Mongolia',country:'Mongolia',region:'Asia',lat:46.86+0.3,lng:103.85-0.5,ecosystem:'Grassland',area_ha:null,credits_issued:200000,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5517',name:'AfriScout Regen Grazing Ethiopia',country:'Ethiopia',region:'Africa',lat:9.15+0.2,lng:40.49+0.2,ecosystem:'Grassland',area_ha:null,credits_issued:163211,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5509',name:'KALPATHARU India ALM',country:'India',region:'Asia',lat:20.59+0.5,lng:78.96+0.5,ecosystem:'Cropland',area_ha:null,credits_issued:76656,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5451',name:'Kenya Climate Smart Agriculture',country:'Kenya',region:'Africa',lat:-0.02-0.4,lng:37.91-0.5,ecosystem:'Cropland',area_ha:null,credits_issued:37448,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5440',name:'OASIS AGRO Spain',country:'Spain',region:'Europe',lat:40.46,lng:-3.75,ecosystem:'Cropland',area_ha:null,credits_issued:208323,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5412',name:'Hubei Cropland China',country:'China',region:'Asia',lat:35.86-0.4,lng:104.20-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:98697,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5413',name:'Coolpath Veles Rangeland USA',country:'United States',region:'North America',lat:37.09-0.5,lng:-95.71-0.4,ecosystem:'Grassland',area_ha:null,credits_issued:100000,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5392',name:'Regenerative Agri Ukraine CarbonEx',country:'Ukraine',region:'Europe',lat:48.38+0.2,lng:31.17+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:1242240,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5376',name:'Seeds of Recovery Ukraine',country:'Ukraine',region:'Europe',lat:48.38-0.2,lng:31.17-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:609823,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5353',name:'Life Climate Soil Turkey',country:'Turkey',region:'Middle East',lat:38.96,lng:35.24,ecosystem:'Cropland',area_ha:null,credits_issued:30703,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5347',name:'NaturAll Brazil AMAGGI',country:'Brazil',region:'Latin America',lat:-14.24+0.4,lng:-51.93+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:1153372,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5348',name:'NaturAll Brazil III',country:'Brazil',region:'Latin America',lat:-14.24-0.4,lng:-51.93-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:1562585,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5335',name:'Boomitra Grassland Colombia',country:'Colombia',region:'Latin America',lat:4.57-0.2,lng:-74.30-0.2,ecosystem:'Grassland',area_ha:null,credits_issued:666484,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5325',name:'Open Field Carbon Israel',country:'Israel',region:'Middle East',lat:31.05-0.2,lng:34.85-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:522771,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5328',name:'PROCARBONO Brazil',country:'Brazil',region:'Latin America',lat:-14.24+0.3,lng:-51.93-0.5,ecosystem:'Cropland',area_ha:null,credits_issued:142830,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5304',name:'RCSO Portugal Iberian',country:'Portugal',region:'Europe',lat:39.40,lng:-8.22,ecosystem:'Cropland',area_ha:null,credits_issued:878,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5299',name:'Agoro Carbon Brazil',country:'Brazil',region:'Latin America',lat:-14.24-0.3,lng:-51.93+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:469563,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5276',name:'ALM Malawi Teralytic',country:'Malawi',region:'Africa',lat:-13.25,lng:34.30,ecosystem:'Cropland',area_ha:null,credits_issued:10000,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5249',name:'EVOLVE Dairy Ireland',country:'Ireland',region:'Europe',lat:53.14,lng:-7.69,ecosystem:'Cropland',area_ha:null,credits_issued:52109,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5233',name:'Gut Bosel Germany Soils',country:'Germany',region:'Europe',lat:51.17+0.2,lng:10.45+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:229808,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5227',name:'Vista Green India ALM',country:'India',region:'Asia',lat:20.59-0.5,lng:78.96+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:3787,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5183',name:'Zhangye Grassland China',country:'China',region:'Asia',lat:35.86+0.5,lng:104.20+0.5,ecosystem:'Grassland',area_ha:null,credits_issued:235710,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5180',name:'Ganaderos Bosques Azuero Panama',country:'Panama',region:'Latin America',lat:8.54,lng:-80.78,ecosystem:'Grassland',area_ha:null,credits_issued:103516,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5155',name:'Land Mgmt Organic Farming India',country:'India',region:'Asia',lat:20.59+0.3,lng:78.96-0.5,ecosystem:'Cropland',area_ha:null,credits_issued:275749,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5144',name:'Shandong Dezhou China ALM',country:'China',region:'Asia',lat:35.86-0.5,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:850472,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5140',name:'BIWAL Carbon India',country:'India',region:'Asia',lat:20.59-0.3,lng:78.96+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:92377,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5125',name:'Mzuri ALM Poland',country:'Poland',region:'Europe',lat:51.92-0.2,lng:19.15-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:487,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5118',name:'Farm Resilience France Belgium',country:'France',region:'Europe',lat:46.23+0.2,lng:2.21+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:13849,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5109',name:'Improved Cropland Xinjiang China',country:'China',region:'Asia',lat:35.86+0.2,lng:104.20+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:102663,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5110',name:'Improved Cropland Heilongjiang China',country:'China',region:'Asia',lat:35.86-0.2,lng:104.20-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:116138,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5112',name:'Wuhu ALM China',country:'China',region:'Asia',lat:35.86+0.3,lng:104.20-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:485986,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5057',name:'Xinghua ALM China',country:'China',region:'Asia',lat:35.86-0.3,lng:104.20+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:96236,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5049',name:'Heilongjiang Zhaoyuan China',country:'China',region:'Asia',lat:35.86+0.4,lng:104.20-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:131510,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5042',name:'East Africa Soil Rwanda',country:'Rwanda',region:'Africa',lat:-1.94,lng:29.87,ecosystem:'Cropland',area_ha:null,credits_issued:163620,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5043',name:'BRA-3C Cerrado Carbon Brazil',country:'Brazil',region:'Latin America',lat:-14.24+0.2,lng:-51.93+0.5,ecosystem:'Cropland',area_ha:null,credits_issued:237224,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5019',name:'Tanghe Cropland China',country:'China',region:'Asia',lat:35.86-0.4,lng:104.20+0.5,ecosystem:'Cropland',area_ha:null,credits_issued:253568,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS5012',name:'Datong ALM Heilongjiang China',country:'China',region:'Asia',lat:35.86+0.5,lng:104.20-0.5,ecosystem:'Cropland',area_ha:null,credits_issued:123249,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4987',name:'COMACO South Zambia',country:'Zambia',region:'Africa',lat:-13.13-0.2,lng:27.85-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:189258,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4962',name:'Brazilian ALM Carbon',country:'Brazil',region:'Latin America',lat:-14.24+0.4,lng:-51.93-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:2081060,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4957',name:'Jilin Province Grouped China',country:'China',region:'Asia',lat:35.86-0.5,lng:104.20-0.5,ecosystem:'Cropland',area_ha:null,credits_issued:837723,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4918',name:'Carbon Smart Cropping Australia',country:'Australia',region:'Oceania',lat:-25.27+0.4,lng:133.78+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:1900750,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4896',name:'Brazil Precision Agriculture',country:'Brazil',region:'Latin America',lat:-14.24-0.5,lng:-51.93+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:11267756,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4897',name:'Fortaleza Ituxi III Brazil',country:'Brazil',region:'Latin America',lat:-14.24+0.3,lng:-51.93+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:2905,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4885',name:'Rootella Carbon USA',country:'United States',region:'North America',lat:37.09-0.4,lng:-95.71+0.5,ecosystem:'Cropland',area_ha:null,credits_issued:281449,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4877',name:'Carbon Smart Cropping USA',country:'United States',region:'North America',lat:37.09+0.4,lng:-95.71+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:951479,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4861',name:'Rivulis Row Crops Italy',country:'Italy',region:'Europe',lat:41.87+0.3,lng:12.57+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:6346,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4855',name:'ALM Argentina Vista Energy',country:'Argentina',region:'Latin America',lat:-38.42-0.3,lng:-63.62-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:5845,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4842',name:'Carbon Smart Cropping USA II',country:'United States',region:'North America',lat:37.09-0.3,lng:-95.71-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:2864037,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4837',name:'Shandong Dongying China',country:'China',region:'Asia',lat:35.86+0.4,lng:104.20+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:132290,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4835',name:'eAgronom Poland',country:'Poland',region:'Europe',lat:51.92+0.3,lng:19.15+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:285114,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4807',name:'BUFACAP Burkina Faso',country:'Burkina Faso',region:'Africa',lat:12.36,lng:-1.54,ecosystem:'Cropland',area_ha:null,credits_issued:519539,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4787',name:'SPOI Orchards Israel',country:'Israel',region:'Middle East',lat:31.05+0.2,lng:34.85+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:163,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4777',name:'Silvopastoral Colombia Orinoquia',country:'Colombia',region:'Latin America',lat:4.57+0.3,lng:-74.30+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:248916,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4767',name:'GreenShift India Regenerative',country:'India',region:'Asia',lat:20.59-0.4,lng:78.96-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:4505732,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4768',name:'Regen Agri Ganga Basin India',country:'India',region:'Asia',lat:20.59+0.2,lng:78.96-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:6776,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4760',name:'Hebei Wei County China',country:'China',region:'Asia',lat:35.86-0.3,lng:104.20-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:163637,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4753',name:'Fangcheng Cropland China',country:'China',region:'Asia',lat:35.86+0.2,lng:104.20-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:228698,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4751',name:'Bulgarian Sustainable Farming',country:'Bulgaria',region:'Europe',lat:42.73,lng:25.49,ecosystem:'Cropland',area_ha:null,credits_issued:179199,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4746',name:'Carbono Rural Paraguay',country:'Paraguay',region:'Latin America',lat:-23.44,lng:-58.44,ecosystem:'Cropland',area_ha:null,credits_issued:268028,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4742',name:'ENJIPAI Tanzania Rangeland',country:'Tanzania',region:'Africa',lat:-6.37-0.2,lng:34.89-0.2,ecosystem:'Grassland',area_ha:null,credits_issued:466275,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4725',name:'Livestock 2040 Uruguay',country:'Uruguay',region:'Latin America',lat:-32.52-0.2,lng:-55.77-0.2,ecosystem:'Grassland',area_ha:null,credits_issued:610,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4659',name:'One Mara Carbon Kenya',country:'Kenya',region:'Africa',lat:-0.02+0.5,lng:37.91+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:127717,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4631',name:'Ambrosia Agroforestry Dominican Republic',country:'Dominican Republic',region:'Latin America',lat:18.74,lng:-70.16,ecosystem:'Cropland',area_ha:null,credits_issued:181,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4629',name:'Lishu Blackland Jilin China',country:'China',region:'Asia',lat:35.86-0.2,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:55509,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4621',name:'Shandong Ju County China',country:'China',region:'Asia',lat:35.86+0.3,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:134210,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4596',name:'Carbon Emission Rice Japan',country:'Japan',region:'Asia',lat:36.20+0.2,lng:138.25+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:5205,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4579',name:'Regen Agri Spain',country:'Spain',region:'Europe',lat:40.46+0.2,lng:-3.75+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:10060,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4574',name:'Maharashtra Gujarat India',country:'India',region:'Asia',lat:20.59-0.2,lng:78.96+0.5,ecosystem:'Cropland',area_ha:null,credits_issued:369451,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4561',name:'Shandong Zhucheng China',country:'China',region:'Asia',lat:35.86+0.2,lng:104.20+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:173573,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4532',name:'Intelligent Agriculture Italy',country:'Italy',region:'Europe',lat:41.87-0.3,lng:12.57-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:170419,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4500',name:'Improved Cropland Fan China',country:'China',region:'Asia',lat:35.86-0.4,lng:104.20+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:74250,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4501',name:'Improved Cropland Qingfeng China',country:'China',region:'Asia',lat:35.86+0.3,lng:104.20-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:112500,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4502',name:'Improved Cropland Jiaoqu China',country:'China',region:'Asia',lat:35.86-0.3,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:156240,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4503',name:'Improved Cropland Zhaozhou China',country:'China',region:'Asia',lat:35.86+0.4,lng:104.20-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:450000,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4504',name:'Improved Cropland Keyouqianqi China',country:'China',region:'Asia',lat:35.86-0.4,lng:104.20-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:598500,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4505',name:'Improved Cropland Hengshan China',country:'China',region:'Asia',lat:35.86+0.5,lng:104.20+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:119925,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4506',name:'Improved Cropland Yuli China',country:'China',region:'Asia',lat:35.86-0.5,lng:104.20+0.5,ecosystem:'Cropland',area_ha:null,credits_issued:155925,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4507',name:'Improved Cropland Zhaoyuan China',country:'China',region:'Asia',lat:35.86+0.4,lng:104.20+0.5,ecosystem:'Cropland',area_ha:null,credits_issued:299250,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4460',name:'GreenShift India Varaha',country:'India',region:'Asia',lat:20.59+0.4,lng:78.96-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:4505732,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4458',name:'Regen Agri Gujarat India',country:'India',region:'Asia',lat:20.59+0.3,lng:78.96+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:57329,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4453',name:'Regenerate Outcomes UK',country:'United Kingdom',region:'Europe',lat:55.38+0.2,lng:-3.44+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:466,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4449',name:'High Impact Bulgaria',country:'Bulgaria',region:'Europe',lat:42.73+0.2,lng:25.49+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:76200,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4435',name:'Cobram Estate Olives Australia',country:'Australia',region:'Oceania',lat:-25.27-0.4,lng:133.78-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:55722,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4418',name:'Chestnut Groves Italy',country:'Italy',region:'Europe',lat:41.87+0.4,lng:12.57+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:94208,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4408',name:'Lake Victoria Agroforestry Kenya',country:'Kenya',region:'Africa',lat:-0.02-0.5,lng:37.91+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:530328,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4397',name:'Jilin Zhenlai China',country:'China',region:'Asia',lat:35.86-0.2,lng:104.20-0.5,ecosystem:'Cropland',area_ha:null,credits_issued:107094,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4398',name:'Jilin Dehui China',country:'China',region:'Asia',lat:35.86+0.3,lng:104.20-0.5,ecosystem:'Cropland',area_ha:null,credits_issued:149989,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4399',name:'Shuangcheng ALM China',country:'China',region:'Asia',lat:35.86-0.3,lng:104.20+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:723139,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4400',name:'Morin Dawa China',country:'China',region:'Asia',lat:35.86+0.4,lng:104.20-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:1015078,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4388',name:'Jiangsu Jiangyan China',country:'China',region:'Asia',lat:35.86-0.4,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:96210,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4390',name:'Jiangsu Guanyun China',country:'China',region:'Asia',lat:35.86+0.4,lng:104.20+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:315778,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4375',name:'Gannan ALM China',country:'China',region:'Asia',lat:35.86-0.4,lng:104.20-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:153281,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4322',name:'Luoping Cropland China',country:'China',region:'Asia',lat:35.86+0.3,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:118410,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4318',name:'Beipiao Cropland China',country:'China',region:'Asia',lat:35.86-0.3,lng:104.20-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:198000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4303',name:'Baoqing Cropland China',country:'China',region:'Asia',lat:35.86+0.4,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:353000,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4307',name:'Carbon Group Argentina II',country:'Argentina',region:'Latin America',lat:-38.42+0.4,lng:-63.62+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:98324,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4293',name:'Qian\'an Cropland China',country:'China',region:'Asia',lat:35.86-0.4,lng:104.20+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:150000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4291',name:'Gaotang Cropland China',country:'China',region:'Asia',lat:35.86+0.3,lng:104.20-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:120000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4282',name:'Sichuan Cangxi China',country:'China',region:'Asia',lat:35.86-0.3,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:138477,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4280',name:'Heilongjiang Meilisi China',country:'China',region:'Asia',lat:35.86+0.2,lng:104.20-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:327990,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4235',name:'Anyang Cropland China',country:'China',region:'Asia',lat:35.86-0.2,lng:104.20+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:48541,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4236',name:'Anew Agri-carbon USA',country:'United States',region:'North America',lat:37.09+0.3,lng:-95.71-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:397098,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4204',name:'Indian Farmers Sustainable Agri India',country:'India',region:'Asia',lat:20.59-0.3,lng:78.96-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:75794,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4201',name:'Carbon Farming Lithuania',country:'Lithuania',region:'Europe',lat:55.17+0.2,lng:23.88+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:32686,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4193',name:'Yushu Cropland China',country:'China',region:'Asia',lat:35.86+0.3,lng:104.20+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:482152,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4116',name:'Heilongjiang Hulin China',country:'China',region:'Asia',lat:35.86-0.3,lng:104.20-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:277382,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4096',name:'Regenerative Agri Brittany France',country:'France',region:'Europe',lat:46.23-0.2,lng:2.21-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:21795,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4065',name:'Nehe ALM Heilongjiang China',country:'China',region:'Asia',lat:35.86+0.4,lng:104.20-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:514863,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4061',name:'Lands of Wheat Italy',country:'Italy',region:'Europe',lat:41.87-0.4,lng:12.57-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:451866,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS4022',name:'AgreenaCarbon Denmark',country:'Denmark',region:'Europe',lat:56.26,lng:9.50,ecosystem:'Cropland',area_ha:null,credits_issued:3022435,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3988',name:'MILOPRI Orchards Israel',country:'Israel',region:'Middle East',lat:31.05+0.3,lng:34.85+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:11020,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3973',name:'involtor Romania',country:'Romania',region:'Europe',lat:45.94,lng:24.97,ecosystem:'Cropland',area_ha:null,credits_issued:16000,activities:'ALM',status:'On Hold',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3938',name:'Carbono Rural Argentina',country:'Argentina',region:'Latin America',lat:-38.42-0.4,lng:-63.62-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:27337,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3927',name:'CARBONO VIVO Colombia',country:'Colombia',region:'Latin America',lat:4.57-0.3,lng:-74.30-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:841472,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3903',name:'High Impact Poland',country:'Poland',region:'Europe',lat:51.92-0.3,lng:19.15-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:618927,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3902',name:'La Gioia Italy',country:'Italy',region:'Europe',lat:41.87+0.4,lng:12.57-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:213,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3774',name:'Boomitra East Africa Kenya',country:'Kenya',region:'Africa',lat:-0.02+0.3,lng:37.91-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:1249417,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3746',name:'NaturAll Brazil I',country:'Brazil',region:'Latin America',lat:-14.24+0.4,lng:-51.93+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:1562585,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3737',name:'Noorgandusi Cropland China',country:'China',region:'Asia',lat:35.86-0.4,lng:104.20+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:1326616,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3708',name:'Hebei Cropland Phase I China',country:'China',region:'Asia',lat:35.86+0.3,lng:104.20-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:137229,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3676',name:'Avocado Agroforestry Israel',country:'Israel',region:'Middle East',lat:31.05-0.3,lng:34.85-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:586,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3656',name:'Agoro Carbon USA Pastureland',country:'United States',region:'North America',lat:37.09-0.4,lng:-95.71-0.4,ecosystem:'Grassland',area_ha:null,credits_issued:449980,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3645',name:'Soil+ Germany',country:'Germany',region:'Europe',lat:51.17-0.2,lng:10.45-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:941981,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3634',name:'Agoro Carbon USA Cropland',country:'United States',region:'North America',lat:37.09+0.4,lng:-95.71+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:306507,activities:'ALM',status:'Verification Approval Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3629',name:'CRHC Hemp Canada',country:'Canada',region:'North America',lat:56.13,lng:-106.35,ecosystem:'Cropland',area_ha:null,credits_issued:22593,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3432',name:'SARA Regenerative Grazing Argentina',country:'Argentina',region:'Latin America',lat:-38.42+0.4,lng:-63.62-0.4,ecosystem:'Grassland',area_ha:null,credits_issued:813484,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3427',name:'Portland Regen SA South Africa',country:'South Africa',region:'Africa',lat:-30.56-0.3,lng:22.94-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:1547,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3394',name:'CNG AgriCarbon SA',country:'South Africa',region:'Africa',lat:-30.56+0.2,lng:22.94+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:195000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3382',name:'Improved Cropland Diandong China',country:'China',region:'Asia',lat:35.86+0.2,lng:104.20+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:280000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3368',name:'Orizon CarbonCrop SA',country:'South Africa',region:'Africa',lat:-30.56-0.2,lng:22.94-0.2,ecosystem:'Cropland',area_ha:null,credits_issued:100000,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3354',name:'TERRRA SANTA Israel',country:'Israel',region:'Middle East',lat:31.05-0.4,lng:34.85-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:22704,activities:'ALM',status:'Under Validation',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3351',name:'US Agricultural Carbon USA',country:'United States',region:'North America',lat:37.09-0.3,lng:-95.71+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:7059,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3346',name:'Indo-Gangetic Plains India',country:'India',region:'Asia',lat:20.59+0.4,lng:78.96+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:163441,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3340',name:'Boomitra Grassland East Africa Kenya',country:'Kenya',region:'Africa',lat:-0.02+0.4,lng:37.91-0.4,ecosystem:'Grassland',area_ha:null,credits_issued:707193,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3331',name:'Arva Carbon Ready USA',country:'United States',region:'North America',lat:37.09-0.2,lng:-95.71+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:531451,activities:'ALM',status:'Registration Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3291',name:'Boomitra Grassland S America Argentina',country:'Argentina',region:'Latin America',lat:-38.42+0.3,lng:-63.62+0.3,ecosystem:'Grassland',area_ha:null,credits_issued:2418650,activities:'ALM',status:'Verification Approval Requested',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3278',name:'Future Soils Germany',country:'Germany',region:'Europe',lat:51.17+0.3,lng:10.45+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:2500,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3242',name:'AGRISOLERO Italy',country:'Italy',region:'Europe',lat:41.87-0.4,lng:12.57+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:289,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3213',name:'Indigo Ag EU Switzerland',country:'Switzerland',region:'Europe',lat:46.82+0.2,lng:8.23+0.2,ecosystem:'Cropland',area_ha:null,credits_issued:4021000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3174',name:'Biowin Agro India',country:'India',region:'Asia',lat:20.59-0.4,lng:78.96+0.4,ecosystem:'Cropland',area_ha:null,credits_issued:26639,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS3053',name:'Greneity India',country:'India',region:'Asia',lat:20.59+0.3,lng:78.96-0.3,ecosystem:'Cropland',area_ha:null,credits_issued:173250,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS2934',name:'Boomitra Indo-Gangetic India',country:'India',region:'Asia',lat:20.59-0.3,lng:78.96+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:350000,activities:'ALM',status:'Under Development',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS2931',name:'GRASS South Africa',country:'South Africa',region:'Africa',lat:-30.56+0.4,lng:22.94-0.3,ecosystem:'Grassland',area_ha:null,credits_issued:639503,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS2889',name:'Boomitra South Vindhyas India',country:'India',region:'Asia',lat:20.59+0.4,lng:78.96-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:676391,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS2887',name:'Boomitra Grassland N Mexico',country:'Mexico',region:'North America',lat:23.63-0.2,lng:-102.55-0.2,ecosystem:'Grassland',area_ha:null,credits_issued:7294407,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS2590',name:'Regen Rice-Wheat-Maize India',country:'India',region:'Asia',lat:20.59-0.4,lng:78.96-0.4,ecosystem:'Cropland',area_ha:null,credits_issued:4267622,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
+  {id:'VCS2554',name:'CNG AgriCarbon SA II',country:'South Africa',region:'Africa',lat:-30.56-0.4,lng:22.94+0.3,ecosystem:'Cropland',area_ha:null,credits_issued:23161,activities:'ALM',status:'Registered',method:'VM0042',year:null,nprt_pct:null,sector:'Agricultural Land Mgmt'},
 ];
 
+
+// Backfill sector on VM0033 projects (no sector field in original data)
+PROJECTS.forEach(p=>{if(!p.sector){p.sector='Blue Carbon';}});
 
 // ════════════════════════════════════════════
 // CONSTANTS
 // ════════════════════════════════════════════
-const ECO_COLORS={'Mangrove':'#00d4aa','Seagrass':'#0ea5e9','Salt Marsh':'#a78bfa','Tidal Wetland':'#34d399'};
-const ECO_BG={'Mangrove':'rgba(0,212,170,.18)','Seagrass':'rgba(14,165,233,.18)','Salt Marsh':'rgba(167,139,250,.18)','Tidal Wetland':'rgba(52,211,153,.18)'};
-const ECOSYSTEMS=['Mangrove','Seagrass','Salt Marsh','Tidal Wetland'];
-const REGIONS=['Africa','Asia','Americas','Pacific','Oceania','Middle East','Europe'];
+const ECO_COLORS={'Mangrove':'#00d4aa','Seagrass':'#0ea5e9','Salt Marsh':'#a78bfa','Tidal Wetland':'#34d399','Grassland':'#f59e0b','Cropland':'#a3e635','Livestock':'#f97316','Rice':'#e879f9'};
+const ECO_BG={'Mangrove':'rgba(0,212,170,.18)','Seagrass':'rgba(14,165,233,.18)','Salt Marsh':'rgba(167,139,250,.18)','Tidal Wetland':'rgba(52,211,153,.18)','Grassland':'rgba(245,158,11,.18)','Cropland':'rgba(163,230,53,.18)','Livestock':'rgba(249,115,22,.18)','Rice':'rgba(232,121,249,.18)'};
+const ECOSYSTEMS=['Mangrove','Seagrass','Salt Marsh','Tidal Wetland','Grassland','Cropland','Livestock','Rice'];
+const REGIONS=['Africa','Asia','Americas','Latin America','North America','Pacific','Oceania','Middle East','Europe'];
+
+const COUNTRY_CENTROIDS={
+  'Argentina':[-38.4161,-63.6167],'Australia':[-25.2744,133.7751],'Austria':[47.5162,14.5501],
+  'Bangladesh':[23.685,90.3563],'Botswana':[-22.3285,24.6849],'Brazil':[-14.235,-51.9253],
+  'Bulgaria':[42.7339,25.4858],'Burkina Faso':[12.3647,-1.5352],'Cambodia':[12.5657,104.991],
+  'Cameroon':[3.848,11.5021],'Canada':[56.1304,-106.3468],'Chile':[-35.6751,-71.543],
+  'China':[35.8617,104.1954],'Colombia':[4.5709,-74.2973],'Costa Rica':[9.7489,-83.7534],
+  'Denmark':[56.2639,9.5018],'Djibouti':[11.8251,42.5903],'Dominican Republic':[18.7357,-70.1627],
+  'Egypt':[26.8206,30.8025],'Ethiopia':[9.145,40.4897],'France':[46.2276,2.2137],
+  'Germany':[51.1657,10.4515],'Ghana':[7.9465,-1.0232],'Guinea':[9.9456,-11.2874],
+  'Guinea-Bissau':[11.8037,-15.1804],'India':[20.5937,78.9629],'Indonesia':[-0.7893,113.9213],
+  'Ireland':[53.1424,-7.6921],'Israel':[31.0461,34.8516],'Italy':[41.8719,12.5674],
+  'Japan':[36.2048,138.2529],'Kazakhstan':[48.0196,66.9237],'Kenya':[-0.0236,37.9062],
+  'Lao PDR':[19.8563,102.4955],'Lesotho':[-29.61,28.2336],'Lithuania':[55.1694,23.8813],
+  'Madagascar':[-18.7669,46.8691],'Malawi':[-13.2543,34.3015],'Malaysia':[4.2105,101.9758],
+  'Mexico':[23.6345,-102.5528],'Mongolia':[46.8625,103.8467],'Mozambique':[-18.6657,35.5296],
+  'Myanmar':[21.9162,95.956],'Namibia':[-22.9576,18.4904],'Netherlands':[52.1326,5.2913],
+  'Nigeria':[9.082,8.6753],'Oman':[21.4735,55.9754],'Pakistan':[30.3753,69.3451],
+  'Panama':[8.538,-80.7821],'Paraguay':[-23.442,-58.4438],'Philippines':[12.8797,121.774],
+  'Poland':[51.9194,19.1451],'Portugal':[39.3999,-8.2245],'Romania':[45.9432,24.9668],
+  'Rwanda':[-1.9403,29.8739],'Saudi Arabia':[23.8859,45.0792],'Senegal':[14.4974,-14.4524],
+  'Sierra Leone':[8.4606,-11.7799],'South Africa':[-30.5595,22.9375],'Spain':[40.4637,-3.7492],
+  'Sri Lanka':[7.8731,80.7718],'Switzerland':[46.8182,8.2275],'Tanzania':[-6.369,34.8888],
+  'Thailand':[15.87,100.9925],'Turkey':[38.9637,35.2433],'Uganda':[1.3733,32.2903],
+  'Ukraine':[48.3794,31.1656],'United Kingdom':[55.3781,-3.436],'United States':[37.09,-95.7129],
+  'Uruguay':[-32.5228,-55.7658],'Viet Nam':[14.0583,108.2772],'Zambia':[-13.1339,27.8493],
+  'Timor-Leste':[-8.8742,125.7275],'Namibia':[-22.9576,18.4904],'Colombia':[4.5709,-74.2973],
+};
 const RISK_COLORS=['','#22c55e','#86efac','#f59e0b','#f97316','#ef4444'];
 const RISK_LABELS=['','Low','Low-Med','Medium','High','Very High'];
 const COUNTRY_RISK={
@@ -442,6 +739,20 @@ const COUNTRY_RISK={
   'Guinea':{p:4,g:5,r:4},'Sierra Leone':{p:3,g:5,r:4},'Nigeria':{p:4,g:4,r:4},
   'Djibouti':{p:3,g:4,r:3},'Egypt':{p:2,g:4,r:3},'China':{p:3,g:2,r:2},
   'Timor-Leste':{p:4,g:4,r:4},'Italy':{p:1,g:2,r:1},'Pakistan':{p:4,g:4,r:4},
+  'Kazakhstan':{p:4,g:4,r:3},'Chile':{p:1,g:1,r:2},'Lithuania':{p:1,g:1,r:1},
+  'Poland':{p:1,g:2,r:1},'France':{p:1,g:1,r:1},'Germany':{p:1,g:1,r:1},
+  'Ukraine':{p:3,g:4,r:5},'Turkey':{p:3,g:3,r:3},'Israel':{p:2,g:2,r:2},
+  'Colombia':{p:3,g:3,r:3},'Costa Rica':{p:1,g:2,r:2},'Paraguay':{p:3,g:3,r:3},
+  'Ethiopia':{p:4,g:5,r:5},'Rwanda':{p:3,g:3,r:3},'Zambia':{p:3,g:4,r:3},
+  'Burkina Faso':{p:5,g:5,r:5},'Uganda':{p:4,g:4,r:4},'Malawi':{p:3,g:4,r:3},
+  'Portugal':{p:1,g:1,r:1},'Bulgaria':{p:2,g:2,r:2},'Romania':{p:2,g:2,r:2},
+  'Switzerland':{p:1,g:1,r:1},'Ireland':{p:1,g:1,r:1},'Denmark':{p:1,g:1,r:1},
+  'Dominican Republic':{p:3,g:3,r:3},'Mongolia':{p:3,g:3,r:3},'Lesotho':{p:3,g:4,r:3},
+  'Panama':{p:3,g:3,r:3},'Canada':{p:1,g:1,r:1},'Uruguay':{p:2,g:2,r:2},
+  'Namibia':{p:2,g:2,r:2},'Botswana':{p:2,g:2,r:2},'Lao PDR':{p:5,g:5,r:5},
+  'Netherlands':{p:1,g:1,r:1},'Austria':{p:1,g:1,r:1},'Japan':{p:1,g:1,r:1},
+  'United Kingdom':{p:1,g:1,r:1},'Mexico':{p:4,g:3,r:4},'Malaysia':{p:3,g:3,r:3},
+  'Viet Nam':{p:4,g:4,r:4},'Spain':{p:1,g:1,r:1},'Mozambique':{p:3,g:4,r:4},
 };
 function riskScore(country){const r=COUNTRY_RISK[country]||{p:3,g:3,r:3};return Math.round((r.p+r.g+r.r)/3)}
 
@@ -465,10 +776,11 @@ let colourMode='eco', sizeMode='dot', sortCol='credits_issued', sortDir=-1, sear
 // UTILS
 // ════════════════════════════════════════════
 function computeThresholds(ps){
-  const s=[...ps].sort((a,b)=>a.area_ha-b.area_ha);
+  const s=[...ps].filter(p=>p.area_ha!=null).sort((a,b)=>a.area_ha-b.area_ha);
+  if(!s.length) return{p33:1000,p66:50000};
   return{p33:s[Math.floor(s.length*.33)].area_ha, p66:s[Math.floor(s.length*.66)].area_ha};
 }
-let THRESH=computeThresholds(PROJECTS);
+let THRESH=computeThresholds(PROJECTS.filter(p=>p.area_ha!=null));
 function sizeClass(ha){return ha<THRESH.p33?'Small':ha<THRESH.p66?'Medium':'Large'}
 function fmt(n){return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':n.toLocaleString()}
 function fmtFull(n){return n.toLocaleString()}
@@ -487,12 +799,14 @@ function getFiltered(){
   const sta=document.getElementById('f-status').value;
   const sz=document.getElementById('f-size').value;
   const mth=document.getElementById('f-method').value;
+  const sec=document.getElementById('f-sector').value;
   const act=document.getElementById('f-activity').value;
   const nprt=document.getElementById('f-nprt').value;
   // Compute thresholds from the non-size-filtered set so bands reflect the active ecosystem/region/method context
-  const base=PROJECTS.filter(p=>(!eco||p.ecosystem===eco)&&(!reg||p.region===reg)&&(!mth||p.method===mth)&&(!sta||p.status===sta)&&matchActivity(p,act)&&(!nprt||(nprt==='flagged'?p.nprt_pct!=null&&p.nprt_pct<15:p.nprt_pct!=null)));
-  if(base.length>=3) THRESH=computeThresholds(base);
-  return sz?base.filter(p=>sizeClass(p.area_ha)===sz):base;
+  const base=PROJECTS.filter(p=>(!eco||p.ecosystem===eco)&&(!reg||p.region===reg)&&(!mth||p.method===mth)&&(!sec||p.sector===sec)&&(!sta||p.status===sta)&&matchActivity(p,act)&&(!nprt||(nprt==='flagged'?p.nprt_pct!=null&&p.nprt_pct<15:p.nprt_pct!=null)));
+  const withArea=base.filter(p=>p.area_ha!=null);
+  if(withArea.length>=3) THRESH=computeThresholds(withArea);
+  return sz?base.filter(p=>p.area_ha!=null&&sizeClass(p.area_ha)===sz):base;
 }
 
 // ════════════════════════════════════════════
@@ -519,11 +833,12 @@ function px(lng){return bx(lng)*vp.k+vp.x}
 function py(lat){return by(lat)*vp.k+vp.y}
 // Marker radius helper (shared by draw + hit-test)
 function markerR(p){
+  const area=p.area_ha||500;
   if(sizeMode==='area'){
     const mpp=40075016/mapCanvas.width;
-    return Math.max(5,Math.min(mapCanvas.width*.22,Math.sqrt(p.area_ha*10000/Math.PI)/mpp*vp.k));
+    return Math.max(5,Math.min(mapCanvas.width*.22,Math.sqrt(area*10000/Math.PI)/mpp*vp.k));
   }
-  return Math.max(5,Math.min(24,Math.sqrt(p.area_ha/380)));
+  return Math.max(5,Math.min(24,Math.sqrt(area/380)));
 }
 
 function drawMap(projects){
@@ -559,7 +874,7 @@ function drawMap(projects){
   }
   // Markers — largest area first so small dots render on top
   const hasSel=selectedProject!==null;
-  [...projects].sort((a,b)=>b.area_ha-a.area_ha).forEach(p=>{
+  [...projects].sort((a,b)=>(b.area_ha||0)-(a.area_ha||0)).forEach(p=>{
     const isSel=hasSel&&p.id===selectedProject.id;
     const rs=riskScore(p.country);
     const color=colourMode==='risk'?RISK_COLORS[rs]:ECO_COLORS[p.ecosystem];
@@ -620,7 +935,7 @@ function updateSelectedPanel(p){
       <span style="margin-top:3px;display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:500;background:${ECO_BG[p.ecosystem]};color:${ecoCol};width:fit-content">${p.ecosystem}</span>
     </div>
     <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;flex:1">
-      <div class="sel-stat"><div class="sel-label">Area</div><div class="sel-val">${fmtFull(p.area_ha)} ha · ${sizeClass(p.area_ha)}</div></div>
+      <div class="sel-stat"><div class="sel-label">Area</div><div class="sel-val">${p.area_ha!=null?fmtFull(p.area_ha)+' ha · '+sizeClass(p.area_ha):'N/A'}</div></div>
       <div class="sel-stat"><div class="sel-label">Est. Annual</div><div class="sel-val">${fmt(p.credits_issued)} tCO₂e/yr</div></div>
       <div class="sel-stat"><div class="sel-label">Activities</div><div class="sel-val" style="font-size:12px">${p.activities||'—'}</div></div>
       <div class="sel-stat"><div class="sel-label">NPRT Buffer</div><div class="sel-val" style="color:${nprtCol}">${nprtVal}</div></div>
@@ -686,7 +1001,7 @@ mapCanvas.addEventListener('mousemove',e=>{
       <span class="popup-eco" style="background:${ECO_BG[hit.ecosystem]};color:${col}">${hit.ecosystem}</span>
       <div style="margin-top:8px">
         <div class="popup-row"><span>Country</span><span>${hit.country}</span></div>
-        <div class="popup-row"><span>Area</span><span>${fmtFull(hit.area_ha)} ha · ${sizeClass(hit.area_ha)}</span></div>
+        <div class="popup-row"><span>Area</span><span>${hit.area_ha!=null?fmtFull(hit.area_ha)+' ha · '+sizeClass(hit.area_ha):'N/A'}</span></div>
         <div class="popup-row"><span>Activities</span><span>${hit.activities||'—'}</span></div>
         <div class="popup-row"><span>Est. Annual</span><span>${fmt(hit.credits_issued)} tCO2e/yr</span></div>
         <div class="popup-row"><span>Status</span><span>${hit.status}</span></div>
@@ -822,7 +1137,7 @@ function renderBubbleChart(projects){
           titleColor:'#e2eeff',bodyColor:'#8ba7c9',padding:10,cornerRadius:6,
           callbacks:{
             title:items=>{const d=items[0].raw;return d.name},
-            label:item=>{const d=item.raw;return[` ${d.country}`,` Credits: ${fmt(d.credits)} VCUs`,` Area: ${fmtFull(d.area)} ha`]},
+            label:item=>{const d=item.raw;return[` ${d.country}`,` Credits: ${fmt(d.credits)} VCUs`,` Area: ${d.area!=null?fmtFull(d.area)+' ha':'N/A'}`]},
           },
         },
       },
@@ -839,7 +1154,7 @@ function updateStats(projects,totalFiltered){
   const isSingle=selectedProject!==null&&projects.length===1;
   if(!projects.length) return;
   const countries=new Set(projects.map(p=>p.country)).size;
-  const totalArea=projects.reduce((s,p)=>s+p.area_ha,0);
+  const totalArea=projects.reduce((s,p)=>s+(p.area_ha||0),0);
   const totalCred=projects.reduce((s,p)=>s+p.credits_issued,0);
   const biggest=projects.reduce((a,b)=>b.credits_issued>a.credits_issued?b:a,projects[0]);
   document.getElementById('s-projects').textContent=projects.length;
@@ -854,7 +1169,7 @@ function updateStats(projects,totalFiltered){
     const sp=projects[0];
     document.getElementById('sl-largest').textContent='Selected Project';
     document.getElementById('sl-area').textContent='Area';
-    document.getElementById('s-area-sub').textContent=`${sp.ecosystem} · ${sizeClass(sp.area_ha)}`;
+    document.getElementById('s-area-sub').textContent=`${sp.ecosystem}${sp.area_ha!=null?' · '+sizeClass(sp.area_ha):''}`;
     document.getElementById('sl-credits').textContent='Est. Annual (tCO₂e)';
     document.getElementById('s-credits-sub').textContent=`${sp.activities||'—'} · ${sp.region}`;
     const nprtText=sp.nprt_pct!=null?sp.nprt_pct+'%'+(sp.nprt_pct<15?' ⚠':''):'not in PD';
@@ -967,8 +1282,9 @@ function initCharts(projects){
 function renderSizeTable(projects){
   const bands=['Small','Medium','Large'];
   const colors=['#60a5fa','#f59e0b','#f87171'];
+  const withArea=projects.filter(p=>p.area_ha!=null);
   const rows=bands.map(b=>{
-    const ps=projects.filter(p=>sizeClass(p.area_ha)===b);
+    const ps=withArea.filter(p=>sizeClass(p.area_ha)===b);
     const area=ps.reduce((s,p)=>s+p.area_ha,0);
     const cred=ps.reduce((s,p)=>s+p.credits_issued,0);
     return{band:b,count:ps.length,area,cred};
@@ -1006,19 +1322,19 @@ function renderTable(projects){
   let rows=projects.filter(p=>!srch||p.name.toLowerCase().includes(srch)||p.country.toLowerCase().includes(srch));
   rows=[...rows].sort((a,b)=>{
     let av,bv;
-    if(sortCol==='size'){av=['Small','Medium','Large'].indexOf(sizeClass(a.area_ha));bv=['Small','Medium','Large'].indexOf(sizeClass(b.area_ha))}
+    if(sortCol==='size'){av=a.area_ha!=null?['Small','Medium','Large'].indexOf(sizeClass(a.area_ha)):-1;bv=b.area_ha!=null?['Small','Medium','Large'].indexOf(sizeClass(b.area_ha)):-1;}
     else{av=a[sortCol]||'';bv=b[sortCol]||''}
     return typeof av==='number'?(av-bv)*sortDir:String(av).localeCompare(String(bv))*sortDir;
   });
-  const eKey=p=>p.ecosystem==='Salt Marsh'?'Salt':p.ecosystem==='Tidal Wetland'?'Tidal':p.ecosystem;
+  const eKey=p=>p.ecosystem==='Salt Marsh'?'Salt':p.ecosystem==='Tidal Wetland'?'Tidal':p.ecosystem.replace(' ','');
   document.getElementById('proj-tbody').innerHTML=rows.map(p=>`
     <tr class="${selectedProject&&p.id===selectedProject.id?'row-selected':''}">
       <td style="font-weight:500">${p.name}</td>
       <td>${p.country}</td>
       <td style="color:var(--muted)">${p.region}</td>
       <td><span class="eco-badge eco-${eKey(p)}">${p.ecosystem}</span></td>
-      <td style="text-align:right" class="num">${fmtFull(p.area_ha)}</td>
-      <td><span class="size-badge size-${sizeClass(p.area_ha)}">${sizeClass(p.area_ha)}</span></td>
+      <td style="text-align:right" class="num">${p.area_ha!=null?fmtFull(p.area_ha):'—'}</td>
+      <td>${p.area_ha!=null?`<span class="size-badge size-${sizeClass(p.area_ha)}">${sizeClass(p.area_ha)}</span>`:'<span class="nprt-na">—</span>'}</td>
       <td style="color:var(--muted);font-size:11px">${p.activities||'—'}</td>
       <td style="text-align:center">${p.wrc_pct!=null?`<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div style="display:flex;width:52px;height:5px;border-radius:3px;overflow:hidden;border:1px solid rgba(255,255,255,.08)"><div style="width:${100-p.wrc_pct}%;background:#00d4aa" title="ARR biomass ${100-p.wrc_pct}%"></div><div style="width:${p.wrc_pct}%;background:#0ea5e9" title="WRC/SOC ${p.wrc_pct}%"></div></div><div style="font-size:9px;color:var(--muted);letter-spacing:.2px">${p.wrc_pct}% SOC</div></div>`:`<span class="nprt-na">—</span>`}</td>
       <td style="text-align:right" class="num">${fmt(p.credits_issued)}</td>
@@ -1054,7 +1370,7 @@ function renderAll(){
 // ════════════════════════════════════════════
 // EVENTS
 // ════════════════════════════════════════════
-['f-eco','f-region','f-status','f-size','f-method','f-activity','f-nprt'].forEach(id=>{
+['f-eco','f-region','f-status','f-size','f-method','f-sector','f-activity','f-nprt'].forEach(id=>{
   document.getElementById(id).addEventListener('change',renderAll);
 });
 document.getElementById('search').addEventListener('input',e=>{searchVal=e.target.value;renderTable(getFiltered())});
