@@ -972,6 +972,14 @@ function updateSelectedPanel(p){
 }
 function renderMap(projects){_mapProjects=projects;drawMap(projects);renderMapLegend();}
 
+// ── Viewport clamping — prevents panning into the black abyss ──
+function clampVP(){
+  const W=mapCanvas.width, H=mapCanvas.height, m=80;
+  // Ensure at least `m` px of the world map always overlaps the canvas
+  vp.x=Math.max(m-W*vp.k, Math.min(W-m, vp.x));
+  vp.y=Math.max(m-H*vp.k, Math.min(H-m, vp.y));
+}
+
 // ── Zoom (wheel, centred on cursor) ──
 mapCanvas.addEventListener('wheel',e=>{
   e.preventDefault();
@@ -981,6 +989,7 @@ mapCanvas.addEventListener('wheel',e=>{
   const mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sx;
   vp.x=mx+(vp.x-mx)*factor; vp.y=my+(vp.y-my)*factor;
   vp.k=Math.max(0.9,Math.min(20,vp.k*factor));
+  clampVP();
   drawMap(_mapProjects);
 },{passive:false});
 
@@ -996,6 +1005,7 @@ window.addEventListener('mousemove',e=>{
   const sx=mapCanvas.width/rect.width;
   vp.x+=(e.clientX-_dragLast.x)*sx; vp.y+=(e.clientY-_dragLast.y)*sx;
   _dragLast={x:e.clientX,y:e.clientY};
+  clampVP();
   drawMap(_mapProjects);
 });
 window.addEventListener('mouseup',()=>{if(_isDragging){_isDragging=false;mapCanvas.style.cursor='crosshair';}});
@@ -1309,9 +1319,21 @@ function initCharts(projects){
 // SIZE BAND TABLE
 // ════════════════════════════════════════════
 function renderSizeTable(projects){
+  const pct=(n,d)=>d?Math.round(n/d*100):0; // safe division — avoids NaN%
   const bands=['Small','Medium','Large'];
   const colors=['#60a5fa','#f59e0b','#f87171'];
   const withArea=projects.filter(p=>p.area_ha!=null);
+
+  // No area data (VM0042 / VM0041 / VM0051 have no hectare figures in the registry CSV)
+  if(!withArea.length){
+    const methods=[...new Set(projects.map(p=>p.method))].join(', ');
+    document.getElementById('size-table').innerHTML='';
+    document.getElementById('thresh-note').innerHTML=
+      `<span style="color:var(--muted)">⚠ Area data is not published in the Verra Registry CSV for <strong style="color:var(--text)">${methods}</strong> projects — size band analysis requires hectare figures. Switch to <strong style="color:var(--text)">VM0033</strong> or <strong style="color:var(--text)">All methods</strong> to see the size distribution.</span>`;
+    document.getElementById('size-sub').textContent='Area data unavailable for selected methodology';
+    return;
+  }
+
   const rows=bands.map(b=>{
     const ps=withArea.filter(p=>sizeClass(p.area_ha)===b);
     const area=ps.reduce((s,p)=>s+p.area_ha,0);
@@ -1324,17 +1346,19 @@ function renderSizeTable(projects){
 
   const rangeLabel={'Small':`< ${fmtFull(THRESH.p33)} ha`,'Medium':`${fmtFull(THRESH.p33)} – ${fmtFull(THRESH.p66)} ha`,'Large':`> ${fmtFull(THRESH.p66)} ha`};
 
+  document.getElementById('size-sub').textContent=`Thresholds: P33 = ${fmtFull(THRESH.p33)} ha · P66 = ${fmtFull(THRESH.p66)} ha · ${withArea.length} projects with known area`;
+
   document.getElementById('size-table').innerHTML=
     `<thead><tr><th>Band</th><th>Range</th><th style="text-align:right">Projects</th><th style="text-align:right">% of total</th><th style="text-align:right">Total Area (ha)</th><th style="text-align:right">% of area</th><th style="text-align:right">Est. Annual (tCO2e)</th><th style="text-align:right">% of total</th></tr></thead><tbody>`+
     rows.map((r,i)=>`<tr>
       <td><div class="band-chip"><div class="band-dot" style="background:${colors[i]}"></div><strong>${r.band}</strong></div></td>
       <td style="color:var(--muted);font-size:12px">${rangeLabel[r.band]}</td>
       <td>${r.count}</td>
-      <td>${Math.round(r.count/totCount*100)}%</td>
+      <td>${pct(r.count,totCount)}%</td>
       <td>${fmtFull(r.area)}</td>
-      <td>${Math.round(r.area/totArea*100)}%</td>
+      <td>${pct(r.area,totArea)}%</td>
       <td>${fmt(r.cred)}</td>
-      <td>${Math.round(r.cred/totCred*100)}%</td>
+      <td>${pct(r.cred,totCred)}%</td>
     </tr>`).join('')+
     `<tr><td><strong>Total</strong></td><td></td><td>${totCount}</td><td>100%</td><td>${fmtFull(totArea)}</td><td>100%</td><td>${fmt(totCred)}</td><td>100%</td></tr></tbody>`;
 
