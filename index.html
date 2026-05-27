@@ -1375,8 +1375,6 @@ function initCharts(projects){
     },
   });
 
-  // ── Size band table ──
-  renderSizeTable(projects);
 }
 
 // ════════════════════════════════════════════
@@ -1479,6 +1477,7 @@ function renderAll(){
   const display=selectedProject?[selectedProject]:p;
   updateStats(display,p.length);
   initCharts(display);
+  renderSizeTable(p);
   renderMap(p);
   renderBubbleChart(p);
   renderTable(p);
